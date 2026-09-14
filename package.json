@@ -1,5 +1,24 @@
 {
+  "name": "thaura-ai-technical-testing",
+  "private": true,
+  "scripts": {
+    "test": "npx playwright test",
+    "test:report": "npx playwright show-report",
+    "auth:login": "node scripts/thaura-login.js",
+    "load:smoke": "node scripts/load-smoke.js",
+    "test:compatibility": "npx playwright test --config=playwright.compat.config.ts",
+    "lighthouse:home": "lighthouse https://thaura.ai --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/lighthouse-home.json --only-categories=performance,best-practices,seo,accessibility",
+    "lighthouse:pricing": "lighthouse https://thaura.ai/pricing --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/lighthouse-pricing.json --only-categories=performance,best-practices,seo,accessibility",
+    "lighthouse:faq": "lighthouse https://thaura.ai/faq --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/lighthouse-faq.json --only-categories=performance,best-practices,seo,accessibility",
+    "lighthouse:api": "lighthouse https://thaura.ai/api --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/lighthouse-api.json --only-categories=performance,best-practices,seo,accessibility",
+    "lighthouse:all": "npm run lighthouse:home && npm run lighthouse:pricing && npm run lighthouse:faq && npm run lighthouse:api"
+  },
   "devDependencies": {
-    "@playwright/test": "^1.63.0"
+    "@playwright/test": "^1.63.0",
+    "lighthouse": "^12.8.2"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "googleapis": "^180.0.0"
   }
 }
