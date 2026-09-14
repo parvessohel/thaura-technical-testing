@@ -6,6 +6,8 @@
     "test:report": "npx playwright show-report",
     "auth:login": "node scripts/thaura-login.js",
     "load:smoke": "node scripts/load-smoke.js",
+    "load:k6:min": "k6 run load/k6-minimum.js",
+    "load:k6:min:report": "k6 run --summary-export=reports/k6-minimum-summary.json load/k6-minimum.js && node scripts/render-k6-report.js",
     "test:compatibility": "npx playwright test --config=playwright.compat.config.ts",
     "lighthouse:home": "lighthouse https://thaura.ai --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/lighthouse-home.json --only-categories=performance,best-practices,seo,accessibility",
     "lighthouse:pricing": "lighthouse https://thaura.ai/pricing --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/lighthouse-pricing.json --only-categories=performance,best-practices,seo,accessibility",
@@ -19,6 +21,7 @@
   },
   "dependencies": {
     "dotenv": "^17.4.2",
-    "googleapis": "^180.0.0"
+    "googleapis": "^180.0.0",
+    "nunjucks": "^3.2.4"
   }
 }

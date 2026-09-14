@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }}</title>
+  <style>
+    :root { color-scheme: light; font-family: Segoe UI, sans-serif; color: #18212b; background: #f4f6f8; }
+    body { margin: 0; }
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 20px 56px; }
+    h1 { margin: 0 0 8px; font-size: 30px; }
+    h2 { margin: 28px 0 12px; font-size: 20px; }
+    .muted { color: #617080; }
+    .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 24px 0; }
+    .card { background: white; border: 1px solid #d8dee5; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgb(20 40 60 / 6%); }
+    .label { color: #617080; font-size: 13px; }
+    .value { display: block; margin-top: 6px; font-size: 25px; font-weight: 700; }
+    .pass { color: #147a45; }
+    .fail { color: #b42318; }
+    table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #d8dee5; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid #e6eaee; text-align: left; }
+    th { background: #eef2f5; font-size: 13px; }
+    code { font-family: Consolas, monospace; }
+    @media (max-width: 760px) { .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } main { padding: 24px 14px 40px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>{{ title }}</h1>
+    <p class="muted">Generated {{ generatedAt }} · {{ baseUrl }} · {{ vus }} VUs · {{ duration }}</p>
+
+    <section class="summary" aria-label="Summary metrics">
+      <div class="card"><span class="label">Overall result</span><span class="value {{ resultClass }}">{{ result }}</span></div>
+      <div class="card"><span class="label">Requests</span><span class="value">{{ requests }}</span></div>
+      <div class="card"><span class="label">Failure rate</span><span class="value">{{ failureRate }}</span></div>
+      <div class="card"><span class="label">p95 response time</span><span class="value">{{ p95 }}</span></div>
+    </section>
+
+    <h2>Checks</h2>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Threshold</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for check in checks %}
+        <tr><td>{{ check.name }}</td><td>{{ check.value }}</td><td>{{ check.threshold }}</td><td class="{{ check.class }}">{{ check.status }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <h2>Request metrics</h2>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Average duration</td><td>{{ average }}</td></tr>
+        <tr><td>Median duration</td><td>{{ median }}</td></tr>
+        <tr><td>Minimum duration</td><td>{{ minimum }}</td></tr>
+        <tr><td>Maximum duration</td><td>{{ maximum }}</td></tr>
+        <tr><td>Data received</td><td>{{ dataReceived }}</td></tr>
+        <tr><td>Data sent</td><td>{{ dataSent }}</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Endpoints tested</h2>
+    <table>
+      <thead><tr><th>Method</th><th>Endpoint</th></tr></thead>
+      <tbody>
+      {% for endpoint in endpoints %}
+        <tr><td>GET</td><td><code>{{ endpoint }}</code></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <h2>Scope</h2>
+    <p class="muted">This is a minimum public-read smoke load, not a stress, endurance, or capacity test.</p>
+  </main>
+</body>
+</html>

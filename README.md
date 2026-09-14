@@ -93,6 +93,16 @@ npm run load:smoke
 
 Defaults are five concurrent requests and two iterations. Override them when needed with `LOAD_CONCURRENCY` and `LOAD_ITERATIONS`.
 
+## Run minimum k6 load test
+
+The k6 test performs a conservative public-read load check against Home, Pricing, API, and FAQ using two virtual users for 20 seconds:
+
+```powershell
+npm run load:k6:min
+```
+
+The default thresholds are fewer than 5% failed requests and a 95th-percentile response time below 3 seconds. Override the defaults with `K6_VUS`, `K6_DURATION`, and `THAURA_BASE_URL` when appropriate. This is a minimum smoke load, not a stress or capacity test.
+
 ## Run browser/device compatibility smoke test
 
 This focused matrix checks the public homepage on Chromium desktop, Firefox desktop, WebKit desktop, and Chromium mobile:
