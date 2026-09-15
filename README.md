@@ -1,42 +1,45 @@
 # Thaura AI Technical Testing
 
-Playwright-based technical testing project for the public Thaura AI website.
+Automated technical testing for the Thaura public website and chat product.
 
-## Current scope
+## Repository branches
 
-- Functional and data correctness checks
-- Full discovered public-route link checks
-- Contact-form validation, unusual-input, and API response checks
-- Pricing arithmetic and cross-page consistency checks
-- Metadata, factual-claim, and privacy-claim checks
-- Lighthouse and network-performance measurements
-- k6 minimum public-read load testing
-- Security headers, cookie attributes, HTTPS, and exposure checks
-- Authenticated API/session testing
-- Chromium, Firefox, WebKit, and mobile compatibility smoke testing
+| Branch or tag | Purpose |
+|---|---|
+| `main` | Completed Task 02 baseline and report |
+| `task-02-submission` | Immutable Task 02 submission snapshot |
+| `task-01-chat-product-testing` | Task 01 chat-product tests and report, based on Task 02 |
 
-## Setup
+Use `main` or `task-02-submission` to reproduce Task 02. Use `task-01-chat-product-testing` to reproduce Task 01.
+
+## Shared setup
 
 ```powershell
 npm install
 npx playwright install chromium firefox webkit
 ```
 
-The minimum public tests do not require Gmail credentials. The k6 commands also require [k6](https://k6.io/docs/get-started/installation/) to be installed and available on `PATH`.
+Public tests do not require Gmail credentials. k6 commands require [k6](https://k6.io/docs/get-started/installation/) to be installed and available on `PATH`.
 
-Authenticated Developer API tests read `THAURA_API_KEY` from the local `.env` file or the shell environment. Copy `.env.example` to `.env`, add the key locally, and never commit or print it:
+Secrets are local only. Copy the template when needed, then fill values locally:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-## Run tests
+Never commit `.env`, OAuth JSON files, OAuth secrets, Gmail refresh tokens, Thaura session state, or API keys.
+
+## Task 02: Public Website Testing
+
+Task 02 covers public-site functional correctness, performance, security, and browser/device compatibility.
+
+### Run the full Task 02 Playwright suite
 
 ```powershell
 npm test
 ```
 
-Run one focused area with:
+### Run focused Task 02 checks
 
 ```powershell
 npx playwright test tests/site-links.spec.ts
@@ -46,61 +49,9 @@ npx playwright test tests/metadata.spec.ts tests/factual-claims.spec.ts
 npx playwright test tests/public-route-health.spec.ts
 npx playwright test tests/network-metrics.spec.ts tests/media-optimization.spec.ts
 npx playwright test tests/security-headers.spec.ts tests/sensitive-exposure.spec.ts
-npx playwright test tests/authenticated-session.spec.ts tests/authenticated-api-surface.spec.ts tests/authenticated-cookie.spec.ts tests/session-behavior.spec.ts
 ```
 
-Open the Playwright HTML report with:
-
-```powershell
-npm run test:report
-```
-
-The latest Playwright report is generated under `playwright-report/`. Failure traces and screenshots are generated under `test-results/`; these are local diagnostics.
-
-## Automated authenticated login
-
-The project can sign in to Thaura automatically using the dedicated Gmail test account. The flow opens Thaura, submits the test email, completes first-time onboarding, waits for the delayed verification email, extracts the six-digit OTP from Gmail, and saves the authenticated Playwright state.
-
-### One-time Gmail OAuth setup
-
-1. Enable the Gmail API in the Google Cloud project.
-2. Configure the OAuth consent screen and add the dedicated Gmail account as a test user.
-3. Create a **Desktop app** OAuth client and download its JSON file outside the repository.
-4. Generate the local Gmail refresh token:
-
-```powershell
-node scripts/generate-gmail-token.js "C:\path\to\Thaura Gmail OTP Desktop.json"
-```
-
-Authorize the dedicated Gmail account in the browser. The script writes the OAuth values to the local `.env` file. Never commit the JSON file, `.env`, client secret, or refresh token.
-
-### Run authenticated login
-
-```powershell
-npm run auth:login
-```
-
-The saved browser state is written to `playwright/.auth/user.json` and is ignored by Git. Authenticated tests can reuse this state with Playwright's `storageState` option.
-
-After authentication, run the authenticated checks with:
-
-```powershell
-npx playwright test tests/authenticated-session.spec.ts tests/authenticated-api-surface.spec.ts tests/authenticated-cookie.spec.ts tests/session-behavior.spec.ts
-```
-
-### Credential lifetime and regeneration
-
-- The OAuth client JSON remains usable until the OAuth client is deleted or revoked.
-- Gmail access tokens are short-lived and are renewed automatically using the refresh token.
-- Because the OAuth app is currently in Testing mode and uses Gmail access, Google may expire the refresh token after approximately seven days.
-- If Gmail authorization fails or the refresh token expires, run the token-generation command again and authorize the account again.
-- The Playwright browser state can expire independently. Rerun `npm run auth:login` to create a fresh state file.
-
-The OAuth client secret used during initial setup was exposed while configuring this project. For long-term use, revoke that client in Google Cloud, create a replacement Desktop client, and regenerate the local refresh token.
-
-## Run Lighthouse audits
-
-Run a single page audit:
+### Run Task 02 Lighthouse audits
 
 ```powershell
 npm run lighthouse:home
@@ -109,85 +60,145 @@ npm run lighthouse:faq
 npm run lighthouse:api
 ```
 
-Run all configured key-page audits:
+Or run all configured audits:
 
 ```powershell
 npm run lighthouse:all
 ```
 
-Reports are saved under the `reports/` folder as JSON. The project also supports HTML output for inspection when needed.
+The anonymous `/api` audit is expected to return `401` and therefore does not produce usable performance metrics. The public API documentation page used by browser tests is `/api-platform`.
 
-The `/api` audit is expected to return `401` when run anonymously, so it does not produce usable Lighthouse performance metrics. The public API documentation page used by the browser tests is `/api-platform`; audit that page separately if public API documentation performance is required.
-
-## Generate the Task 02 report
-
-The Markdown report is the editable source of truth. Generate the browser-friendly HTML version with:
-
-```powershell
-npm run report:task02:html
-```
-
-This generates `reports/TASK-02-BUG-REPORT.html` from `reports/TASK-02-BUG-REPORT.md`.
-
-The Markdown report is the editable source; the HTML report is the browser-friendly submission view.
-
-## Run minimum k6 load test
-
-The k6 test performs a conservative public-read load check against Home, Pricing, API, and FAQ using two virtual users for 20 seconds:
+### Run Task 02 minimum k6 load testing
 
 ```powershell
 npm run load:k6:min
-```
-
-Generate the k6 summary JSON and browser-friendly HTML report in one command:
-
-```powershell
 npm run load:k6:min:report
 ```
 
-This generates `reports/k6-minimum-summary.json` and `reports/k6-minimum-report.html`.
+The test uses two virtual users for 20 seconds against Home, Pricing, API platform, and FAQ. The report command generates:
 
-The default thresholds are fewer than 5% failed requests and a 95th-percentile response time below 3 seconds. Override the defaults with `K6_VUS`, `K6_DURATION`, and `THAURA_BASE_URL` when appropriate. This is a minimum smoke load, not a stress or capacity test.
+```text
+reports/k6-minimum-summary.json
+reports/k6-minimum-report.html
+```
 
-The available Lighthouse lab evidence includes FCP, LCP, CLS, TBT, Speed Index, and root-document response time. INP/FID was not available from these lab runs and is reported as unavailable rather than inferred.
+This is a minimum public-read smoke load, not stress or capacity testing.
 
-## Run browser/device compatibility smoke test
-
-This focused matrix checks the public homepage on Chromium desktop, Firefox desktop, WebKit desktop, and Chromium mobile:
+### Run Task 02 browser/device compatibility
 
 ```powershell
 npm run test:compatibility
 ```
 
-This uses `playwright.compat.config.ts` and runs the homepage smoke test in four projects. Firefox currently has a documented loading-spinner finding in the Task 02 report; the compatibility command is intentionally allowed to expose that defect.
+The matrix covers Chromium desktop, Firefox desktop, WebKit desktop, and Chromium mobile. The Firefox loading-spinner finding is intentionally reported rather than hidden.
 
-## Suggested interview demo
+### Task 02 reports
 
-For a short demonstration, run:
+Generate the browser-friendly report from its Markdown source:
 
 ```powershell
-npm install
-npx playwright install chromium firefox webkit
-npx playwright test tests/site-links.spec.ts
-npm run load:k6:min:report
 npm run report:task02:html
 ```
 
-For the full verification pass, noting that some commands intentionally expose documented findings such as the protected `/api` Lighthouse route and Firefox loading issue:
+Outputs:
 
-```powershell
-npm test
-npm run test:compatibility
-npm run lighthouse:all
-npm run load:k6:min:report
+```text
+reports/TASK-02-BUG-REPORT.md
+reports/TASK-02-BUG-REPORT.html
 ```
 
-The full pass can take several minutes and may regenerate report files. Focused commands are better during development.
+The Markdown file is the editable source of truth; the HTML file is the presentation/submission version.
 
-## Testing notes
+## Task 01: Chat Product Testing
 
-- Tests target `https://thaura.ai`.
-- Large-scale load and stress testing is not included; `npm run load:k6:min` provides only a bounded public-read availability check.
-- Contact-form delivery requires a controlled mailbox and is currently tracked in `TESTING-TODO.md`.
-- Known limitations and deferred coverage are documented in `TESTING-TODO.md` and `reports/TASK-02-BUG-REPORT.md`.
-- Do not commit `.env` files, OAuth JSON files, API keys, passwords, refresh tokens, browser state, or private test data.
+Task 01 covers the authenticated Thaura chat product: sessions, chat behavior, Free-tier quota, uploads, Memory, Incognito mode, Developer API behavior, and negative/boundary inputs.
+
+### Configure authenticated testing
+
+The login flow uses a dedicated Gmail account and Thaura email OTP. Configure Gmail OAuth once:
+
+1. Enable Gmail API in Google Cloud.
+2. Configure the OAuth consent screen and add the test Gmail account.
+3. Create a Desktop OAuth client and keep its JSON outside the repository.
+4. Generate the local Gmail token:
+
+```powershell
+node scripts/generate-gmail-token.js "C:\path\to\Thaura Gmail OTP Desktop.json"
+```
+
+The exact test email addresses and login method are recorded in the Task 01 report. Do not put OAuth secrets, refresh tokens, session tokens, or API keys in reports.
+
+Refresh the authenticated Playwright state when needed:
+
+```powershell
+npm run auth:login
+```
+
+This creates the local ignored file `playwright/.auth/user.json`.
+
+### Run the full Task 01 suite
+
+```powershell
+npx playwright test tests/task01
+```
+
+### Run focused Task 01 checks
+
+```powershell
+npx playwright test tests/task01/auth-session.spec.ts
+npx playwright test tests/task01/chat-behavior.spec.ts
+npx playwright test tests/task01/free-tier-quota.spec.ts
+npx playwright test tests/task01/upload-integrity.spec.ts
+npx playwright test tests/task01/memory-incognito.spec.ts
+npx playwright test tests/task01/developer-api-contract.spec.ts
+npx playwright test tests/task01/developer-api-authenticated.spec.ts
+npx playwright test tests/task01/negative-boundary.spec.ts
+```
+
+### Task 01 Developer API configuration
+
+The authenticated API tests read `THAURA_API_KEY` from local `.env` or the shell environment:
+
+```dotenv
+THAURA_API_KEY=your-local-test-key
+```
+
+Run the API tests with:
+
+```powershell
+npx playwright test tests/task01/developer-api-authenticated.spec.ts
+```
+
+The tests skip when no key is configured. API calls are metered; use a dedicated low-balance test key and minimal token limits.
+
+### Task 01 reports
+
+```text
+reports/task01/TASK-01-REPORT.md
+reports/task01/TASK-01-REPORT.html
+```
+
+The report records verified behavior and state-dependent limitations, including quota boundaries, upload parsing, Memory persistence, funded API inference, and unavailable Settings/Account/Billing surfaces.
+
+## Reports and diagnostics
+
+Playwright's latest interactive report:
+
+```powershell
+npm run test:report
+```
+
+Generated Playwright reports are under `playwright-report/`; failure traces and screenshots are under `test-results/`. These are local diagnostics and are not required submission artifacts.
+
+## Reproducibility notes
+
+- Lighthouse values vary with network and server conditions.
+- k6 latency varies with location and time.
+- Authenticated browser state expires independently.
+- Some Task 01 scenarios require fresh account state, quota availability, or API balance.
+- Client-side tests cannot prove server-side backup deletion.
+- Known limitations and deferred coverage are documented in the relevant Task 01 and Task 02 reports.
+
+## Security
+
+The OAuth client used during initial setup was exposed during development. For long-term use, revoke/rotate that OAuth client and regenerate the local refresh token. Revoke exposed API keys as well. Never commit or share `.env` through the repository.
