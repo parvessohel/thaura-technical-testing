@@ -124,6 +124,8 @@ The stored reports are available in [reports](.). Representative captured metric
 | FAQ | 1.3 s | 5.3 s | 0 | 300 ms | 3.7 s | 390 ms |
 | `/api` | Not available | Not available | Not available | Not available | Not available | Anonymous `401` |
 
+INP/FID was not available from these Lighthouse lab runs and was not inferred from other metrics.
+
 The `/api` Lighthouse run could not produce performance metrics because the route returned `401`. The public API documentation page used by functional testing is `/api-platform`.
 
 The Home Lighthouse report recorded these category scores:
