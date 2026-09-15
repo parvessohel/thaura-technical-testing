@@ -228,6 +228,17 @@ reports/task02/TASK-02-BUG-REPORT.html
 
 The Markdown file is the editable source of truth; the HTML file is the presentation/submission version.
 
+## Reports index
+
+| Deliverable | Location |
+|---|---|
+| Task 01 technical report, Markdown | `reports/task01/TASK-01-REPORT.md` |
+| Task 01 technical report, HTML | `reports/task01/TASK-01-REPORT.html` |
+| Task 02 technical report, Markdown | `reports/task02/TASK-02-BUG-REPORT.md` |
+| Task 02 technical report, HTML | `reports/task02/TASK-02-BUG-REPORT.html` |
+| Task 03 AI/testing reflection | `reports/TASK-03-AI-REFLECTION.md` |
+| Combined Excel bug register | `reports/TASK-01-TASK-02-BUG-REPORT.xlsx` |
+
 ## Reports and diagnostics
 
 Playwright's latest interactive report:
