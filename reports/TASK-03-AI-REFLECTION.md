@@ -2,55 +2,39 @@
 
 ## 1. How AI will impact software testing over the next 2–3 years
 
-AI will make test creation and maintenance much faster, especially for exploratory coverage, test-data generation, locator discovery, API contract checks, and failure analysis. Test engineers will be able to describe a workflow in plain language and quickly produce an initial automated test, then focus their time on deciding what should be tested and whether the evidence is trustworthy.
+AI will make testing faster and more efficient, especially for repetitive work like writing smoke tests, generating Playwright flows, creating API checks, and building edge-case scenarios. It will also help testers move quickly when they need to inspect logs, review failed runs, or understand a large codebase.
 
-I do not think AI will remove the need for test engineers. The difficult part of testing is not only writing code; it is understanding risk, choosing useful boundaries, interpreting ambiguous results, and deciding whether a test actually proves the requirement. AI-generated tests can also be overconfident, duplicate each other, or validate the wrong behavior. Human review will remain essential for test strategy, data integrity, security, and release decisions.
+I do not think AI will replace testers. It will change what testers spend their time on. More of the low-level mechanical work will be automated, while human testers will focus more on risk, coverage, clarity, and evidence. The best teams will use AI as a strong assistant, not as a shortcut to skip judgment.
 
-I expect the strongest teams to use AI as an engineering assistant combined with strong evidence practices: reproducible tests, controlled data, clear assertions, traceable reports, and explicit blocked or unverified states.
+## 2. Do I personally use AI? Does it help me in testing?
 
-## 2. How I use AI in testing
+Yes. I use AI regularly in my testing work, and it helps me a lot. In practice, I use it to:
 
-Yes, I use AI directly in testing work. In this assessment it helped me:
+- generate Playwright scripts for browser validation
+- draft or refine k6 scripts for load/performance checks
+- create test cases and assertions from requirements
+- understand failure output and narrow root causes faster
+- review logs, trends, and report data more quickly
+- summarize findings and generate documentation for test results
+- speed up repetitive tasks like script creation and validation logic
 
-- Turn the written requirements into a test-coverage matrix.
-- Identify the nearest code and test surface before making changes.
-- Build Playwright tests for public pages and authenticated workflows.
-- Automate Gmail OTP retrieval and reusable browser-state creation.
-- Inspect live UI controls and network requests to discover actual API behavior.
-- Generate safe synthetic fixtures for upload testing.
-- Diagnose flaky or brittle assertions and improve them after real test failures.
-- Compare pricing and technical claims across pages.
-- Generate Lighthouse, k6, Markdown, HTML, and Excel reporting artifacts.
-- Separate confirmed defects from limitations caused by unavailable state, balance, or recipient access.
+I still review everything manually. I validate generated scripts against real behavior, run them, and check whether they are actually testing the right thing. AI helps me work faster, but I do not trust it blindly.
 
-I still review the implementation and the test output manually. For example, when a test reported a failure, I checked whether it was a product defect, a stale selector, an expired session, or a test-design problem before changing the code.
+## 3. Which AI tools do I currently use?
 
-## 3. AI tools I use
+The main tool I use is GitHub Copilot in VS Code. I also use the broader testing stack around it, including:
 
-The main tool I use is GitHub Copilot in VS Code. I use it for repository exploration, implementation, test design, debugging, report writing, and command-line workflow support.
+- Playwright for browser automation
+- k6 for performance/load testing
+- Lighthouse for quality and performance checks
+- custom agent workflows with MCP server support to generate performance test flows from Swagger/OpenAPI specs
+- Node.js scripts for report generation and analysis
+- VS Code for coding, debugging, and AI-assisted development
 
-I also use the normal developer tools around it:
+## 4. Which AI tool do I find most helpful for testing, and why?
 
-- Playwright for browser automation.
-- Lighthouse for performance and quality audits.
-- k6 for controlled load checks.
-- Gmail API/OAuth for automated OTP retrieval.
-- Node.js scripts for report generation and evidence processing.
-- Git for branches, commits, and reproducible review history.
+GitHub Copilot in VS Code is the most helpful for me because it sits directly in my workflow. It helps me move from a requirement to a working script quickly, and it is especially useful when I am debugging failed tests or turning raw output into useful analysis.
 
-The AI is useful because it works directly alongside these tools and can help connect browser evidence, source files, test results, and documentation in one workflow.
+In my hands-on work, it has been valuable for generating Playwright scripts, creating validation logic, and using custom agents with MCP-based Swagger workflow generation to turn API contracts into performance test flows much faster. I still keep final responsibility for quality and correctness, but the tool helps me work faster and think more clearly.
 
-## 4. The AI tool I find most helpful for testing
-
-GitHub Copilot in VS Code is currently the most useful tool for my testing work because it stays close to the repository and the execution environment. It can inspect the existing test structure, make a focused change, run the relevant test, interpret the failure, and help update the report without losing the relationship between code and evidence.
-
-The most useful part is not simply generating test code. It is the feedback loop:
-
-1. Translate a requirement into a testable behavior.
-2. Inspect the real application and existing code.
-3. Implement a small automated check.
-4. Run it against the live system.
-5. Investigate failures instead of assuming the first explanation is correct.
-6. Record the result, limitation, or defect in a reproducible report.
-
-That workflow helped this project identify real issues such as inconsistent pricing, the Firefox loading problem, and the difference between a successful contact-form submission response and independently verified email delivery.
+Overall, I see AI as a powerful testing assistant. It helps me be more productive, but good testing still depends on human judgment, verification, and real evidence.
