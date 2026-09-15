@@ -2,16 +2,6 @@
 
 Automated technical testing for the Thaura public website and chat product.
 
-## Repository branches
-
-| Branch or tag | Purpose |
-|---|---|
-| `main` | Completed Task 02 baseline and report |
-| `task-02-submission` | Immutable Task 02 submission snapshot |
-| `task-01-chat-product-testing` | Task 01 chat-product tests and report, based on Task 02 |
-
-Use `main` or `task-02-submission` to reproduce Task 02. Use `task-01-chat-product-testing` to reproduce Task 01.
-
 ## Shared setup
 
 ### Required tools
