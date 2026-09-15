@@ -83,6 +83,16 @@ npm run lighthouse:all
 
 Reports are saved under the `reports/` folder as JSON. The project also supports HTML output for inspection when needed.
 
+## Generate the Task 02 report
+
+The Markdown report is the editable source of truth. Generate the browser-friendly HTML version with:
+
+```powershell
+npm run report:task02:html
+```
+
+This generates `reports/TASK-02-BUG-REPORT.html` from `reports/TASK-02-BUG-REPORT.md`.
+
 ## Run bounded load smoke test
 
 This is a small, non-intrusive concurrent check for the key public pages. It is not a stress test.

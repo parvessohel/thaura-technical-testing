@@ -8,7 +8,8 @@ test('Authenticated session persists across navigation and loses access after co
   const page = await context.newPage();
 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByText(/Thaura Test|Happy Monday/i).first()).toBeVisible();
+  const homeAuthResponse = await page.request.get(authMeUrl, { failOnStatusCode: false });
+  expect(homeAuthResponse.status()).toBe(200);
   await page.goto('/pricing', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText('$12/month')).toBeVisible();
 
