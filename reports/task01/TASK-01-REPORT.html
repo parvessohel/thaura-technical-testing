@@ -30,11 +30,12 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated 2026-09-15T15:48:57.372Z from <code>TASK-02-BUG-REPORT.md</code></p>
+<p class="meta">Generated 2026-09-15T16:11:46.929Z from <code>TASK-02-BUG-REPORT.md</code></p>
 <h1>Task 01: Thaura Web App Technical Testing Report</h1>
 <h2>Scope</h2>
 <p>Target: <code>https://thaura.ai/</code></p>
 <p>This report covers the automated Task 01 work completed on the dedicated Free-tier test account. Secrets, session tokens, OAuth credentials, and API keys are intentionally excluded.</p>
+<p>Final automated validation: <code>16 passed</code> with <code>npx playwright test tests/task01</code>.</p>
 <p>Test account details for reproducibility:</p>
 <ul>
 <li>Account: dedicated Gmail-backed test account</li>
@@ -120,6 +121,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <li>Two independent authenticated browser contexts worked concurrently.</li>
 <li>Clearing one context&#39;s cookies returned <code>401</code> without invalidating the other context.</li>
 <li>UI Logout returned the session to <code>401 Not authenticated</code>.</li>
+<li>UI logout uses a temporary fresh OTP session so it does not invalidate the shared state used by the other tests.</li>
 </ul>
 <h3>Chat behavior</h3>
 <ul>
@@ -179,6 +181,7 @@ npx playwright test tests/task01/memory-incognito.spec.ts
 npx playwright test tests/task01/developer-api-contract.spec.ts
 npx playwright test tests/task01/developer-api-authenticated.spec.ts
 npx playwright test tests/task01/negative-boundary.spec.ts
+npx playwright test tests/task01
 </code></pre>
 
 </article>

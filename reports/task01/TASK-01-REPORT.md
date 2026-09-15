@@ -6,6 +6,8 @@ Target: `https://thaura.ai/`
 
 This report covers the automated Task 01 work completed on the dedicated Free-tier test account. Secrets, session tokens, OAuth credentials, and API keys are intentionally excluded.
 
+Final automated validation: `16 passed` with `npx playwright test tests/task01`.
+
 Test account details for reproducibility:
 
 - Account: dedicated Gmail-backed test account
@@ -39,6 +41,7 @@ Test account details for reproducibility:
 - Two independent authenticated browser contexts worked concurrently.
 - Clearing one context's cookies returned `401` without invalidating the other context.
 - UI Logout returned the session to `401 Not authenticated`.
+- UI logout uses a temporary fresh OTP session so it does not invalidate the shared state used by the other tests.
 
 ### Chat behavior
 
@@ -109,4 +112,5 @@ npx playwright test tests/task01/memory-incognito.spec.ts
 npx playwright test tests/task01/developer-api-contract.spec.ts
 npx playwright test tests/task01/developer-api-authenticated.spec.ts
 npx playwright test tests/task01/negative-boundary.spec.ts
+npx playwright test tests/task01
 ```
