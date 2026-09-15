@@ -1,31 +1,68 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Task 03: AI & Testing Reflection</title>
-  <style>
-    :root { color-scheme: light; font-family: Segoe UI, sans-serif; color: #17212b; background: #eef2f5; }
-    body { margin: 0; }
-    main { max-width: 1100px; margin: 0 auto; padding: 36px 22px 64px; }
-    article { background: #fff; border: 1px solid #d6dee6; border-radius: 10px; padding: 36px 42px; box-shadow: 0 6px 22px rgba(20, 40, 60, 0.08); }
-    h1 { margin-top: 0; padding-bottom: 16px; border-bottom: 3px solid #176b87; font-size: 32px; }
-    h2 { margin-top: 32px; padding-top: 14px; border-top: 1px solid #dce3e8; color: #14566e; }
-    h3 { margin-top: 24px; color: #2a3d4d; }
-    p, li { line-height: 1.7; font-size: 16px; }
-    ul, ol { padding-left: 22px; }
-    code { padding: 2px 6px; border-radius: 4px; background: #edf1f4; font-family: Consolas, monospace; font-size: 0.92em; }
-    blockquote { margin: 22px 0; padding: 12px 18px; border-left: 4px solid #e0a126; background: #fff8e8; }
-    .meta { margin: -4px 0 26px; color: #667784; font-size: 13px; }
-    @media (max-width: 760px) { main { padding: 16px 10px 36px; } article { padding: 22px 18px; } h1 { font-size: 26px; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task 03: AI & Testing Reflection</title>
+<style>
+:root { color-scheme: light; font-family: Segoe UI, sans-serif; color: #17212b; background: #eef2f5; }
+body { margin: 0; }
+main { max-width: 1180px; margin: 0 auto; padding: 36px 22px 64px; }
+article { background: #fff; border: 1px solid #d6dee6; border-radius: 8px; padding: 36px 42px; box-shadow: 0 4px 16px rgb(20 40 60 / 8%); }
+h1 { margin-top: 0; padding-bottom: 18px; border-bottom: 3px solid #176b87; font-size: 32px; }
+h2 { margin-top: 34px; padding-top: 14px; border-top: 1px solid #dce3e8; color: #14566e; }
+h3 { margin-top: 26px; color: #273d4a; }
+p, li { line-height: 1.65; }
+code { padding: 2px 5px; border-radius: 4px; background: #edf1f4; font-family: Consolas, monospace; font-size: .92em; }
+pre { overflow-x: auto; padding: 14px; border-radius: 6px; background: #17212b; color: #f3f7fa; }
+pre code { padding: 0; background: transparent; }
+table { width: 100%; margin: 18px 0 24px; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 10px 11px; border: 1px solid #d9e1e7; text-align: left; vertical-align: top; }
+th { background: #eaf1f4; color: #214553; }
+tr:nth-child(even) { background: #f8fafb; }
+a { color: #056b8d; }
+blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126; background: #fff8e8; }
+.meta { margin: -4px 0 26px; color: #667784; font-size: 13px; }
+@media (max-width: 760px) { main { padding: 16px 10px 36px; } article { padding: 24px 18px; } h1 { font-size: 26px; } table { display: block; overflow-x: auto; white-space: normal; } }
+@media print { :root { background: #fff; } main { max-width: none; padding: 0; } article { border: 0; box-shadow: none; padding: 0; } a { color: inherit; text-decoration: none; } }
+</style>
 </head>
 <body>
-  <main>
-    <article>
-      <p class="meta">Generated $(Get-Date -Format o) from <code>TASK-03-AI-REFLECTION.md</code></p>
-      $md
-    </article>
-  </main>
+<main>
+<article>
+<p class="meta">Generated 2026-09-15T22:05:21.779Z from <code>TASK-03-AI-REFLECTION.md</code></p>
+<h1>Task 03: AI &amp; Testing Reflection</h1>
+<h2>1. How AI will impact software testing over the next 2–3 years</h2>
+<p>AI will make testing faster and more efficient, especially for repetitive work like writing smoke tests, generating Playwright flows, creating API checks, and building edge-case scenarios. It will also help testers move quickly when they need to inspect logs, review failed runs, or understand a large codebase.</p>
+<p>I do not think AI will replace testers. It will change what testers spend their time on. More of the low-level mechanical work will be automated, while human testers will focus more on risk, coverage, clarity, and evidence. The best teams will use AI as a strong assistant, not as a shortcut to skip judgment.</p>
+<h2>2. Do I personally use AI? Does it help me in testing?</h2>
+<p>Yes. I use AI regularly in my testing work, and it helps me a lot. In practice, I use it to:</p>
+<ul>
+<li>generate Playwright scripts for browser validation</li>
+<li>draft or refine k6 scripts for load/performance checks</li>
+<li>create test cases and assertions from requirements</li>
+<li>understand failure output and narrow root causes faster</li>
+<li>review logs, trends, and report data more quickly</li>
+<li>summarize findings and generate documentation for test results</li>
+<li>speed up repetitive tasks like script creation and validation logic</li>
+</ul>
+<p>I still review everything manually. I validate generated scripts against real behavior, run them, and check whether they are actually testing the right thing. AI helps me work faster, but I do not trust it blindly.</p>
+<h2>3. Which AI tools do I currently use?</h2>
+<p>The main tool I use is GitHub Copilot in VS Code. I also use the broader testing stack around it, including:</p>
+<ul>
+<li>Playwright for browser automation</li>
+<li>k6 for performance/load testing</li>
+<li>Lighthouse for quality and performance checks</li>
+<li>custom agent workflows with MCP server support to generate performance test flows from Swagger/OpenAPI specs</li>
+<li>Node.js scripts for report generation and analysis</li>
+<li>VS Code for coding, debugging, and AI-assisted development</li>
+</ul>
+<h2>4. Which AI tool do I find most helpful for testing, and why?</h2>
+<p>GitHub Copilot in VS Code is the most helpful for me because it sits directly in my workflow. It helps me move from a requirement to a working script quickly, and it is especially useful when I am debugging failed tests or turning raw output into useful analysis.</p>
+<p>In my hands-on work, it has been valuable for generating Playwright scripts, creating validation logic, and using custom agents with MCP-based Swagger workflow generation to turn API contracts into performance test flows much faster. I still keep final responsibility for quality and correctness, but the tool helps me work faster and think more clearly.</p>
+<p>Overall, I see AI as a powerful testing assistant. It helps me be more productive, but good testing still depends on human judgment, verification, and real evidence.</p>
+
+</article>
+</main>
 </body>
 </html>

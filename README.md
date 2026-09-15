@@ -145,7 +145,7 @@ Task 02 covers public-site functional correctness, performance, security, and br
 ### Run the full Task 02 Playwright suite
 
 ```powershell
-npm test
+npm run test:task02
 ```
 
 ### Run focused Task 02 checks
@@ -226,7 +226,8 @@ The Markdown file is the editable source of truth; the HTML file is the presenta
 | Task 01 technical report, HTML | `reports/task01/TASK-01-REPORT.html` |
 | Task 02 technical report, Markdown | `reports/task02/TASK-02-BUG-REPORT.md` |
 | Task 02 technical report, HTML | `reports/task02/TASK-02-BUG-REPORT.html` |
-| Task 03 AI/testing reflection | `reports/TASK-03-AI-REFLECTION.md` |
+| Task 03 AI/testing reflection, Markdown | `reports/TASK-03-AI-REFLECTION.md` |
+| Task 03 AI/testing reflection, HTML | `reports/TASK-03-AI-REFLECTION.html` |
 | Combined Excel bug register | `reports/TASK-01-TASK-02-BUG-REPORT.xlsx` |
 
 ## Reports and diagnostics

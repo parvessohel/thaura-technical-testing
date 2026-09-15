@@ -13,13 +13,19 @@ if (!fs.existsSync(sourcePath)) {
 const markdown = fs.readFileSync(sourcePath, 'utf8');
 const body = marked.parse(markdown, { gfm: true, headerIds: true });
 const generatedAt = new Date().toISOString();
+const sourceName = path.basename(sourcePath);
+const title = sourceName === 'TASK-03-AI-REFLECTION.md'
+    ? 'Task 03: AI & Testing Reflection'
+    : sourceName === 'TASK-01-REPORT.md'
+        ? 'Task 01: Thaura Chat Product Testing Report'
+        : 'Task 02: Thaura.ai Website Technical Testing Report';
 
 const html = `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Task 02: Thaura.ai Website Technical Testing Report</title>
+<title>${title}</title>
 <style>
 :root { color-scheme: light; font-family: Segoe UI, sans-serif; color: #17212b; background: #eef2f5; }
 body { margin: 0; }
@@ -46,7 +52,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated ${generatedAt} from <code>TASK-02-BUG-REPORT.md</code></p>
+<p class="meta">Generated ${generatedAt} from <code>${sourceName}</code></p>
 ${body}
 </article>
 </main>

@@ -22,11 +22,18 @@ The contact form accepts and submits data successfully at the API/UI level, but 
 - Authenticated account: dedicated Gmail-backed Thaura test account
 - Reports and raw evidence: `reports/`, `tests/`, and `TESTING-TODO.md`
 
+For link coverage, the test enumerated every rendered `<a href>` value on all 14
+listed public routes, including same-origin and external HTTP(S) destinations.
+HTTP links were classified as mixed content, and each HTTP(S) destination was
+requested to verify that it resolved without a 4xx/5xx response. Links that are
+only created after an untested interaction or loaded exclusively by client-side
+code without a rendered anchor are outside this automated enumeration scope.
+
 ## 3. Requirement Coverage Matrix
 
 | Task 02 requirement | Status | Evidence |
 |---|---|---|
-| Internal and external links resolve | Pass for discovered public links | [site-links.spec.ts](../../tests/task02/site-links.spec.ts) |
+| Internal and external links resolve | Pass for all rendered HTTP(S) links on the 14 tested public routes | [site-links.spec.ts](../../tests/task02/site-links.spec.ts) |
 | Contact required fields and email validation | Pass | [contact-validation.spec.ts](../../tests/task02/contact-validation.spec.ts) |
 | Contact success/API response | Pass at submission level | [contact-submission.spec.ts](../../tests/task02/contact-submission.spec.ts) |
 | Contact data receipt/delivery | Blocked | [TESTING-TODO.md](../TESTING-TODO.md) |
@@ -193,7 +200,6 @@ Authenticated state persisted across navigation. Removing the session cookie cau
 The public homepage smoke test passed on:
 
 - Chromium desktop
-- Firefox desktop
 - WebKit desktop
 - Chromium mobile profile
 

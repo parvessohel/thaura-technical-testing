@@ -30,7 +30,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated 2026-09-15T20:30:29.760Z from <code>TASK-02-BUG-REPORT.md</code></p>
+<p class="meta">Generated 2026-09-15T22:14:33.926Z from <code>TASK-02-BUG-REPORT.md</code></p>
 <h1>Task 02: Thaura.ai Website Technical Testing Report</h1>
 <h2>1. Executive Summary</h2>
 <p>Target: <code>https://thaura.ai/</code></p>
@@ -51,6 +51,12 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <li>Authenticated account: dedicated Gmail-backed Thaura test account</li>
 <li>Reports and raw evidence: <code>reports/</code>, <code>tests/</code>, and <code>TESTING-TODO.md</code></li>
 </ul>
+<p>For link coverage, the test enumerated every rendered <code>&lt;a href&gt;</code> value on all 14
+listed public routes, including same-origin and external HTTP(S) destinations.
+HTTP links were classified as mixed content, and each HTTP(S) destination was
+requested to verify that it resolved without a 4xx/5xx response. Links that are
+only created after an untested interaction or loaded exclusively by client-side
+code without a rendered anchor are outside this automated enumeration scope.</p>
 <h2>3. Requirement Coverage Matrix</h2>
 <table>
 <thead>
@@ -62,7 +68,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 </thead>
 <tbody><tr>
 <td>Internal and external links resolve</td>
-<td>Pass for discovered public links</td>
+<td>Pass for all rendered HTTP(S) links on the 14 tested public routes</td>
 <td><a href="../../tests/task02/site-links.spec.ts">site-links.spec.ts</a></td>
 </tr>
 <tr>
@@ -358,7 +364,6 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <p>The public homepage smoke test passed on:</p>
 <ul>
 <li>Chromium desktop</li>
-<li>Firefox desktop</li>
 <li>WebKit desktop</li>
 <li>Chromium mobile profile</li>
 </ul>
