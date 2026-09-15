@@ -114,6 +114,6 @@ npm run test:compatibility
 ## Testing notes
 
 - Tests target `https://thaura.ai`.
-- Large-scale load and stress testing is not included; `npm run load:smoke` provides only a bounded availability check.
+- Large-scale load and stress testing is not included; `npm run load:k6:min` provides only a bounded public-read availability check.
 - Contact-form delivery requires a controlled mailbox and is currently tracked in `TESTING-TODO.md`.
 - Do not commit `.env` files, OAuth JSON files, API keys, passwords, refresh tokens, browser state, or private test data.
