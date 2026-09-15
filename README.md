@@ -83,15 +83,25 @@ npm run lighthouse:all
 
 Reports are saved under the `reports/` folder as JSON. The project also supports HTML output for inspection when needed.
 
-## Run bounded load smoke test
+## Generate the Task 02 report
 
-This is a small, non-intrusive concurrent check for the key public pages. It is not a stress test.
+The Markdown report is the editable source of truth. Generate the browser-friendly HTML version with:
 
 ```powershell
-npm run load:smoke
+npm run report:task02:html
 ```
 
-Defaults are five concurrent requests and two iterations. Override them when needed with `LOAD_CONCURRENCY` and `LOAD_ITERATIONS`.
+This generates `reports/TASK-02-BUG-REPORT.html` from `reports/TASK-02-BUG-REPORT.md`.
+
+## Run minimum k6 load test
+
+The k6 test performs a conservative public-read load check against Home, Pricing, API, and FAQ using two virtual users for 20 seconds:
+
+```powershell
+npm run load:k6:min
+```
+
+The default thresholds are fewer than 5% failed requests and a 95th-percentile response time below 3 seconds. Override the defaults with `K6_VUS`, `K6_DURATION`, and `THAURA_BASE_URL` when appropriate. This is a minimum smoke load, not a stress or capacity test.
 
 ## Run browser/device compatibility smoke test
 
@@ -104,6 +114,6 @@ npm run test:compatibility
 ## Testing notes
 
 - Tests target `https://thaura.ai`.
-- Large-scale load and stress testing is not included; `npm run load:smoke` provides only a bounded availability check.
+- Large-scale load and stress testing is not included; `npm run load:k6:min` provides only a bounded public-read availability check.
 - Contact-form delivery requires a controlled mailbox and is currently tracked in `TESTING-TODO.md`.
 - Do not commit `.env` files, OAuth JSON files, API keys, passwords, refresh tokens, browser state, or private test data.

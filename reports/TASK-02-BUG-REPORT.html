@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task 02: Thaura.ai Website Technical Testing Report</title>
+<style>
+:root { color-scheme: light; font-family: Segoe UI, sans-serif; color: #17212b; background: #eef2f5; }
+body { margin: 0; }
+main { max-width: 1180px; margin: 0 auto; padding: 36px 22px 64px; }
+article { background: #fff; border: 1px solid #d6dee6; border-radius: 8px; padding: 36px 42px; box-shadow: 0 4px 16px rgb(20 40 60 / 8%); }
+h1 { margin-top: 0; padding-bottom: 18px; border-bottom: 3px solid #176b87; font-size: 32px; }
+h2 { margin-top: 34px; padding-top: 14px; border-top: 1px solid #dce3e8; color: #14566e; }
+h3 { margin-top: 26px; color: #273d4a; }
+p, li { line-height: 1.65; }
+code { padding: 2px 5px; border-radius: 4px; background: #edf1f4; font-family: Consolas, monospace; font-size: .92em; }
+pre { overflow-x: auto; padding: 14px; border-radius: 6px; background: #17212b; color: #f3f7fa; }
+pre code { padding: 0; background: transparent; }
+table { width: 100%; margin: 18px 0 24px; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 10px 11px; border: 1px solid #d9e1e7; text-align: left; vertical-align: top; }
+th { background: #eaf1f4; color: #214553; }
+tr:nth-child(even) { background: #f8fafb; }
+a { color: #056b8d; }
+blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126; background: #fff8e8; }
+.meta { margin: -4px 0 26px; color: #667784; font-size: 13px; }
+@media (max-width: 760px) { main { padding: 16px 10px 36px; } article { padding: 24px 18px; } h1 { font-size: 26px; } table { display: block; overflow-x: auto; white-space: normal; } }
+@media print { :root { background: #fff; } main { max-width: none; padding: 0; } article { border: 0; box-shadow: none; padding: 0; } a { color: inherit; text-decoration: none; } }
+</style>
+</head>
+<body>
+<main>
+<article>
+<p class="meta">Generated 2026-09-15T09:58:20.402Z from <code>TASK-02-BUG-REPORT.md</code></p>
+<h1>Task 02: Thaura.ai Website Technical Testing Report</h1>
+<h2>1. Executive Summary</h2>
+<p>Target: <code>https://thaura.ai/</code></p>
+<p>The minimum technical testing pass is substantially complete across functional correctness, performance baseline, security baseline, and browser/device compatibility. The most important confirmed defect is a customer-facing pricing inconsistency:</p>
+<ul>
+<li>Pricing page: <code>$12/month</code>, <code>Billed $144/year</code>, <code>Save 20%</code></li>
+<li><code>$12 x 12 = $144</code>, which represents a <code>0%</code> annual discount.</li>
+<li>The FAQ still references <code>$15/month</code>.</li>
+<li><code>$15 x 12 = $180</code>; <code>$144</code> is a 20% discount from <code>$180</code>.</li>
+</ul>
+<p>The contact form accepts and submits data successfully at the API/UI level, but delivery to the actual recipient mailbox cannot be independently verified because the recipient is not exposed and the controlled Gmail account receives OTP messages only.</p>
+<h2>2. Scope and Environment</h2>
+<ul>
+<li>Target: <code>https://thaura.ai/</code></li>
+<li>Browser automation: Playwright with Chromium, Firefox, WebKit, and Chromium mobile smoke coverage</li>
+<li>Performance: Lighthouse 12.8.2 and k6 2.1.0</li>
+<li>Load test: 2 virtual users for 20 seconds, public GET requests only</li>
+<li>Authenticated account: dedicated Gmail-backed Thaura test account</li>
+<li>Reports and raw evidence: <code>reports/</code>, <code>tests/</code>, and <code>TESTING-TODO.md</code></li>
+</ul>
+<h2>3. Requirement Coverage Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Task 02 requirement</th>
+<th>Status</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Internal and external links resolve</td>
+<td>Pass for discovered public links</td>
+<td><a href="../tests/site-links.spec.ts">site-links.spec.ts</a></td>
+</tr>
+<tr>
+<td>Contact required fields and email validation</td>
+<td>Pass</td>
+<td><a href="../tests/contact-validation.spec.ts">contact-validation.spec.ts</a></td>
+</tr>
+<tr>
+<td>Contact success/API response</td>
+<td>Pass at submission level</td>
+<td><a href="../tests/contact-submission.spec.ts">contact-submission.spec.ts</a></td>
+</tr>
+<tr>
+<td>Contact data receipt/delivery</td>
+<td>Blocked</td>
+<td><a href="../TESTING-TODO.md">TESTING-TODO.md</a></td>
+</tr>
+<tr>
+<td>Contact length limits</td>
+<td>Finding</td>
+<td><a href="../tests/contact-input-security.spec.ts">contact-input-security.spec.ts</a></td>
+</tr>
+<tr>
+<td>Pricing calculation and cross-page consistency</td>
+<td>Fail</td>
+<td><a href="../tests/pricing-consistency.spec.ts">pricing-consistency.spec.ts</a></td>
+</tr>
+<tr>
+<td>Canonical, meta, Open Graph, and Twitter metadata</td>
+<td>Pass for key pages</td>
+<td><a href="../tests/metadata.spec.ts">metadata.spec.ts</a></td>
+</tr>
+<tr>
+<td>Factual and technical claim consistency</td>
+<td>Partial</td>
+<td><a href="../tests/factual-claims.spec.ts">factual-claims.spec.ts</a></td>
+</tr>
+<tr>
+<td>Lighthouse key-page audits</td>
+<td>Partial: public pages covered; <code>/api</code> is protected</td>
+<td><code>reports/lighthouse-*.json</code></td>
+</tr>
+<tr>
+<td>Minimum concurrent load testing</td>
+<td>Pass</td>
+<td><a href="../load/k6-minimum.js">k6-minimum.js</a> and <a href="k6-minimum-report.html">k6-minimum-report.html</a></td>
+</tr>
+<tr>
+<td>Media optimization inspection</td>
+<td>Pass with limitations</td>
+<td><a href="../tests/media-optimization.spec.ts">media-optimization.spec.ts</a></td>
+</tr>
+<tr>
+<td>Page weight and request counts</td>
+<td>Pass for key pages</td>
+<td><a href="../tests/network-metrics.spec.ts">network-metrics.spec.ts</a></td>
+</tr>
+<tr>
+<td>Console and failed-network monitoring</td>
+<td>Pass for public routes</td>
+<td><a href="../tests/public-route-health.spec.ts">public-route-health.spec.ts</a></td>
+</tr>
+<tr>
+<td>HTTPS and mixed-content checks</td>
+<td>Pass</td>
+<td><a href="../tests/security-headers.spec.ts">security-headers.spec.ts</a></td>
+</tr>
+<tr>
+<td>Security headers</td>
+<td>Pass for checked pages</td>
+<td><a href="../tests/security-headers.spec.ts">security-headers.spec.ts</a></td>
+</tr>
+<tr>
+<td>Unusual/special-character input</td>
+<td>Pass for Contact form</td>
+<td><a href="../tests/contact-input-security.spec.ts">contact-input-security.spec.ts</a></td>
+</tr>
+<tr>
+<td>Sensitive-information exposure</td>
+<td>No findings in tested public pages</td>
+<td><a href="../tests/sensitive-exposure.spec.ts">sensitive-exposure.spec.ts</a></td>
+</tr>
+<tr>
+<td>Cookie attributes</td>
+<td>Pass for authenticated session cookie</td>
+<td><a href="../tests/authenticated-cookie.spec.ts">authenticated-cookie.spec.ts</a></td>
+</tr>
+<tr>
+<td>Cross-browser/device compatibility</td>
+<td>Partial: Firefox render failure</td>
+<td><a href="../tests/compatibility.spec.ts">compatibility.spec.ts</a></td>
+</tr>
+</tbody></table>
+<h2>4. Confirmed Findings</h2>
+<h3>F-001: Pricing discount calculation is inconsistent</h3>
+<ul>
+<li>Severity: Medium</li>
+<li>Area: Functional and data correctness</li>
+<li>URL: <code>https://thaura.ai/pricing</code></li>
+<li>Reproduction:<ol>
+<li>Open the Pricing page.</li>
+<li>Select the Annual option.</li>
+<li>Observe <code>$12/month</code>, <code>Billed $144/year</code>, and <code>Save 20%</code>.</li>
+<li>Calculate <code>$12 x 12</code>.</li>
+</ol>
+</li>
+<li>Expected: The displayed annual price and saving percentage should be mathematically consistent.</li>
+<li>Actual: <code>$12 x 12 = $144</code>, so the annual price is not discounted. The displayed saving is 20%.</li>
+<li>Recommendation: Either change the monthly reference to <code>$15/month</code> or change the annual saving label/calculation so all values agree.</li>
+<li>Status: Confirmed defect.</li>
+</ul>
+<h3>F-002: Pricing differs between Pricing and FAQ pages</h3>
+<ul>
+<li>Severity: Medium</li>
+<li>Area: Functional and data correctness</li>
+<li>URLs: <code>https://thaura.ai/pricing</code>, <code>https://thaura.ai/faq</code></li>
+<li>Actual: Pricing displays <code>$12/month</code>; the FAQ answer says pricing is set at <code>$15</code>.</li>
+<li>Recommendation: Centralize pricing data and render the same source values across the Pricing page, FAQ, checkout, and marketing copy.</li>
+<li>Status: Confirmed inconsistency.</li>
+</ul>
+<h3>F-003: Contact form has no visible client-side length limits</h3>
+<ul>
+<li>Severity: Low to Medium</li>
+<li>Area: Functional correctness and input handling</li>
+<li>URL: <code>https://thaura.ai/contact</code></li>
+<li>Evidence: <code>name</code>, <code>email</code>, <code>subject</code>, and <code>message</code> reported <code>maxLength: -1</code>.</li>
+<li>Actual: Long, Unicode, RTL, and script-like values returned <code>200</code> without reflection or a server error, but no client-side maximum lengths were exposed.</li>
+<li>Recommendation: Define documented server-side limits and matching client-side <code>maxlength</code> values, then test rejection behavior for oversized payloads.</li>
+<li>Status: Confirmed observation; server-side limits not observable from the public response.</li>
+</ul>
+<h3>F-004: Firefox desktop remains on the loading spinner</h3>
+<ul>
+<li>Severity: Medium</li>
+<li>Area: Cross-browser/device compatibility</li>
+<li>URL: <code>https://thaura.ai/</code></li>
+<li>Reproduction:<ol>
+<li>Run <code>npx playwright test --config=playwright.compat.config.ts --project=firefox-desktop</code>.</li>
+<li>Wait for the page load and hydration window.</li>
+<li>Observe the page remains on the centered loading spinner and body text remains empty.</li>
+</ol>
+</li>
+<li>Expected: The public homepage should render usable content in Firefox desktop, as it does in Chromium, WebKit, and mobile Chromium.</li>
+<li>Actual: Firefox returned HTTP <code>200</code> but did not render page content within the test timeout.</li>
+<li>Evidence: <code>test-results/compatibility-Key-public-p-2e403-ss-the-compatibility-matrix-firefox-desktop/test-failed-1.png</code>.</li>
+<li>Recommendation: Investigate Firefox-specific hydration, JavaScript, or resource-loading behavior before claiming full cross-browser compatibility.</li>
+<li>Status: Confirmed compatibility failure in the current test environment.</li>
+</ul>
+<h2>5. Contact Delivery Result</h2>
+<p>The Contact form test observed:</p>
+<ul>
+<li><code>POST https://backend.thaura.ai/api/communications/send</code></li>
+<li>Response status: <code>200</code></li>
+<li>UI message: <code>Message sent successfully! We&#39;ll get back to you soon.</code></li>
+</ul>
+<p>A Gmail search across all folders found no unique contact-form marker. The Gmail account did receive Thaura OTP messages, proving Gmail access works, but it is not confirmed as the Contact form recipient.</p>
+<ul>
+<li>Submission/API behavior: Verified</li>
+<li>Actual recipient delivery: Not independently verifiable</li>
+<li>Required follow-up: identify the backend recipient mailbox or configure a controlled test recipient</li>
+</ul>
+<h2>6. Performance Results</h2>
+<h3>Lighthouse</h3>
+<p>The stored reports are available in <a href=".">reports</a>. Representative captured metrics:</p>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th align="right">FCP</th>
+<th align="right">LCP</th>
+<th align="right">CLS</th>
+<th align="right">TBT</th>
+<th align="right">Speed Index</th>
+<th align="right">TTFB/root document</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Home</td>
+<td align="right">1.7 s</td>
+<td align="right">6.2 s</td>
+<td align="right">0</td>
+<td align="right">640 ms</td>
+<td align="right">4.0 s</td>
+<td align="right">190 ms</td>
+</tr>
+<tr>
+<td>Pricing</td>
+<td align="right">1.8 s</td>
+<td align="right">5.3 s</td>
+<td align="right">0</td>
+<td align="right">190 ms</td>
+<td align="right">4.1 s</td>
+<td align="right">430 ms</td>
+</tr>
+<tr>
+<td>FAQ</td>
+<td align="right">1.3 s</td>
+<td align="right">5.3 s</td>
+<td align="right">0</td>
+<td align="right">300 ms</td>
+<td align="right">3.7 s</td>
+<td align="right">390 ms</td>
+</tr>
+<tr>
+<td><code>/api</code></td>
+<td align="right">Not available</td>
+<td align="right">Not available</td>
+<td align="right">Not available</td>
+<td align="right">Not available</td>
+<td align="right">Not available</td>
+<td align="right">Anonymous <code>401</code></td>
+</tr>
+</tbody></table>
+<p>The <code>/api</code> Lighthouse run could not produce performance metrics because the route returned <code>401</code>. The public API documentation page used by functional testing is <code>/api-platform</code>.</p>
+<p>The Home Lighthouse report recorded these category scores:</p>
+<ul>
+<li>Performance: <code>0.59</code></li>
+<li>Accessibility: <code>1.00</code></li>
+<li>Best Practices: <code>0.96</code></li>
+<li>SEO: <code>1.00</code></li>
+</ul>
+<h3>k6 minimum load</h3>
+<p>The generated report is <a href="k6-minimum-report.html">k6-minimum-report.html</a>.</p>
+<ul>
+<li>Endpoints: <code>/</code>, <code>/pricing</code>, <code>/api-platform</code>, <code>/faq</code></li>
+<li>Virtual users: 2</li>
+<li>Duration: 20 seconds</li>
+<li>Requests: 26</li>
+<li>Failed requests: 0.00%</li>
+<li>Checks succeeded: 100.00%</li>
+<li>p95 response time: 633.46 ms</li>
+<li>Thresholds: failure rate below 5%; p95 below 3 seconds</li>
+</ul>
+<p>This is a minimum smoke load, not a capacity, endurance, or stress test.</p>
+<h3>Network and media</h3>
+<p>The key-page network test recorded approximately:</p>
+<ul>
+<li>Home: 90 requests, 996 KB known transfer</li>
+<li>Pricing: 83 requests, 1.04 MB known transfer</li>
+<li>API platform: 83 requests, 1.03 MB known transfer</li>
+<li>FAQ: 83 requests, 1.07 MB known transfer</li>
+</ul>
+<p>The media inspection found WebP hero assets on Pricing, API platform, and FAQ, valid intrinsic image dimensions, and no eager below-the-fold images in the tested pages. No video asset appeared on those four pages.</p>
+<h2>7. Security Results</h2>
+<ul>
+<li>HTTP redirects to HTTPS with status <code>301</code>.</li>
+<li>Checked pages returned CSP, HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, and Permissions-Policy.</li>
+<li>Public sensitive-exposure scan found no credential-shaped secrets or real stack traces in tested source, console, or response content.</li>
+<li>Authenticated <code>thaura_token</code> cookie:<ul>
+<li><code>Secure: true</code></li>
+<li><code>HttpOnly: true</code></li>
+<li><code>SameSite: Lax</code></li>
+<li>Domain: <code>.thaura.ai</code></li>
+<li>Path: <code>/</code></li>
+</ul>
+</li>
+<li>Public unauthenticated page responses did not set cookies during the check.</li>
+<li>Anonymous <code>/api/auth/me</code> <code>401</code> responses are expected protection behavior, not a confirmed defect.</li>
+</ul>
+<h2>8. Authenticated API and Session Results</h2>
+<p>The saved Gmail/OTP Playwright state was verified against read-only endpoints:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th align="right">Anonymous</th>
+<th align="right">Authenticated</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/auth/me</code></td>
+<td align="right">401</td>
+<td align="right">200</td>
+</tr>
+<tr>
+<td><code>/api/bootstrap</code></td>
+<td align="right">401</td>
+<td align="right">200</td>
+</tr>
+<tr>
+<td><code>/api/user/settings</code></td>
+<td align="right">401</td>
+<td align="right">200</td>
+</tr>
+<tr>
+<td><code>/api/plugins/list</code></td>
+<td align="right">200</td>
+<td align="right">200</td>
+</tr>
+</tbody></table>
+<p>Authenticated state persisted across navigation. Removing the session cookie caused <code>auth/me</code> to return <code>401</code> again.</p>
+<h2>9. Compatibility Results</h2>
+<p>The public homepage smoke test passed on:</p>
+<ul>
+<li>Chromium desktop</li>
+<li>Firefox desktop</li>
+<li>WebKit desktop</li>
+<li>Chromium mobile profile</li>
+</ul>
+<p>Firefox desktop returned HTTP <code>200</code> but remained on the loading spinner with no rendered body content. The compatibility matrix therefore currently fails for Firefox desktop.</p>
+<p>This is compatibility smoke coverage, not exhaustive visual or workflow testing on every device/browser combination.</p>
+<h2>10. Remaining Limitations</h2>
+<ol>
+<li>Contact-form recipient delivery cannot be independently verified without access to the backend recipient mailbox.</li>
+<li>Product workflows beyond discovered read-only API behavior are not fully tested, including chat creation, file upload, projects, artifacts, settings changes, and UI logout.</li>
+<li>Full stress, endurance, and capacity testing was not performed; only the minimum k6 smoke load was run.</li>
+<li>One-off factual claims such as Qwen3.8, more than 90 languages, EU infrastructure, and energy-efficiency wording require manual product-owner confirmation rather than automated cross-page comparison.</li>
+<li>The <code>/api</code> Lighthouse route is protected and requires an authenticated or otherwise authorized audit path.</li>
+</ol>
+<h2>11. Recommended Priorities</h2>
+<ol>
+<li>Correct and centralize the pricing values and discount calculation.</li>
+<li>Identify or configure the Contact form recipient for delivery verification.</li>
+<li>Add explicit Contact field length limits and server-side rejection tests.</li>
+<li>Run authenticated product workflow tests.</li>
+<li>Use the k6 script as a baseline before any larger approved load plan.</li>
+<li>Obtain product-owner confirmation for one-off factual and sustainability claims.</li>
+</ol>
+
+</article>
+</main>
+</body>
+</html>
