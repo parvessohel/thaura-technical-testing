@@ -106,7 +106,7 @@ test.describe('Task 01 authentication and session handling', () => {
 
       console.log(JSON.stringify({ afterLogout }, null, 2));
     } finally {
-      await context.close();
+      await context.close().catch(() => {});
       if (fs.existsSync(temporaryStatePath)) fs.unlinkSync(temporaryStatePath);
     }
   });
