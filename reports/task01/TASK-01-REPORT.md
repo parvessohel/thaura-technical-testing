@@ -10,10 +10,13 @@ Final automated validation: `16 passed` with `npx playwright test tests/task01`.
 
 Test account details for reproducibility:
 
-- Account: dedicated Gmail-backed test account
+- Primary test account email: `shoheltqtec@gmail.com`
+- Quota-isolation test email: `shoheltqtec+task01quota@gmail.com`
 - Plan: Free Plan
-- Login: email OTP
+- Login method: email OTP sent by Thaura and retrieved through the dedicated Gmail inbox
 - Browser state: generated locally under `playwright/.auth/`
+
+Passwords, OAuth client secrets, Gmail refresh tokens, Thaura session tokens, and Developer API keys are intentionally excluded.
 
 ## Coverage Status
 

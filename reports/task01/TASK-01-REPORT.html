@@ -30,7 +30,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated 2026-09-15T16:11:46.929Z from <code>TASK-02-BUG-REPORT.md</code></p>
+<p class="meta">Generated 2026-09-15T18:53:38.831Z from <code>TASK-02-BUG-REPORT.md</code></p>
 <h1>Task 01: Thaura Web App Technical Testing Report</h1>
 <h2>Scope</h2>
 <p>Target: <code>https://thaura.ai/</code></p>
@@ -38,11 +38,13 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <p>Final automated validation: <code>16 passed</code> with <code>npx playwright test tests/task01</code>.</p>
 <p>Test account details for reproducibility:</p>
 <ul>
-<li>Account: dedicated Gmail-backed test account</li>
+<li>Primary test account email: <code>shoheltqtec@gmail.com</code></li>
+<li>Quota-isolation test email: <code>shoheltqtec+task01quota@gmail.com</code></li>
 <li>Plan: Free Plan</li>
-<li>Login: email OTP</li>
+<li>Login method: email OTP sent by Thaura and retrieved through the dedicated Gmail inbox</li>
 <li>Browser state: generated locally under <code>playwright/.auth/</code></li>
 </ul>
+<p>Passwords, OAuth client secrets, Gmail refresh tokens, Thaura session tokens, and Developer API keys are intentionally excluded.</p>
 <h2>Coverage Status</h2>
 <table>
 <thead>
