@@ -1,4 +1,8 @@
 import { expect, test } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const { loginViaOtp } = require('../../scripts/thaura-login');
 
 const authStatePath = 'playwright/.auth/user.json';
 const authMeUrl = 'https://backend.thaura.ai/api/auth/me';
@@ -82,19 +86,28 @@ test.describe('Task 01 authentication and session handling', () => {
   });
 
   test('UI logout invalidates the authenticated session', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: authStatePath });
+    test.setTimeout(180_000);
+    const temporaryStatePath = path.resolve('playwright/.auth/task01-logout.json');
+
+    await loginViaOtp({ saveStatePath: temporaryStatePath });
+    const context = await browser.newContext({ storageState: temporaryStatePath });
     const page = await context.newPage();
 
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.getByRole('button', { name: /Thaura Test/ }).click({ force: true });
-    await page.getByText('Logout', { exact: true }).click({ force: true });
-    await page.waitForTimeout(1_000);
+    try {
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(5_000);
+      await page.getByRole('button', { name: /Thaura Test/ }).click({ force: true });
+      await page.getByText('Logout', { exact: true }).click({ force: true });
+      await page.waitForTimeout(1_000);
 
-    const afterLogout = await getAuthMe(context);
-    expect(afterLogout.status).toBe(401);
-    expect(afterLogout.body).toMatch(/not authenticated/i);
+      const afterLogout = await getAuthMe(context);
+      expect(afterLogout.status).toBe(401);
+      expect(afterLogout.body).toMatch(/not authenticated/i);
 
-    console.log(JSON.stringify({ afterLogout }, null, 2));
-    await context.close();
+      console.log(JSON.stringify({ afterLogout }, null, 2));
+    } finally {
+      await context.close();
+      if (fs.existsSync(temporaryStatePath)) fs.unlinkSync(temporaryStatePath);
+    }
   });
 });
