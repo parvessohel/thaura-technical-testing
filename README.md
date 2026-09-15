@@ -21,11 +21,82 @@ npx playwright install chromium firefox webkit
 
 Public tests do not require Gmail credentials. k6 commands require [k6](https://k6.io/docs/get-started/installation/) to be installed and available on `PATH`.
 
-For local authenticated runs, copy the template and fill the required values:
+For local authenticated runs, copy the environment template and fill the required values:
 
 ```powershell
 Copy-Item .env.example .env
 ```
+
+## Task 01: Chat Product Testing
+
+Task 01 covers the authenticated Thaura chat product: sessions, chat behavior, Free-tier quota, uploads, Memory, Incognito mode, Developer API behavior, and negative/boundary inputs.
+
+### Configure authenticated testing
+
+The login flow uses a dedicated Gmail account and Thaura email OTP. Configure Gmail OAuth once:
+
+1. Enable Gmail API in Google Cloud.
+2. Configure the OAuth consent screen and add the test Gmail account.
+3. Create a Desktop OAuth client and keep its JSON outside the repository.
+4. Generate the local Gmail token:
+
+```powershell
+node scripts/generate-gmail-token.js "C:\path\to\Thaura Gmail OTP Desktop.json"
+```
+
+The exact test email addresses and login method are recorded in the Task 01 report.
+
+Refresh the authenticated Playwright state when needed:
+
+```powershell
+npm run auth:login
+```
+
+This creates the local ignored file `playwright/.auth/user.json`.
+
+### Run the full Task 01 suite
+
+```powershell
+npx playwright test tests/task01
+```
+
+### Run focused Task 01 checks
+
+```powershell
+npx playwright test tests/task01/auth-session.spec.ts
+npx playwright test tests/task01/chat-behavior.spec.ts
+npx playwright test tests/task01/free-tier-quota.spec.ts
+npx playwright test tests/task01/upload-integrity.spec.ts
+npx playwright test tests/task01/memory-incognito.spec.ts
+npx playwright test tests/task01/developer-api-contract.spec.ts
+npx playwright test tests/task01/developer-api-authenticated.spec.ts
+npx playwright test tests/task01/negative-boundary.spec.ts
+```
+
+### Task 01 Developer API configuration
+
+The authenticated API tests read `THAURA_API_KEY` from local `.env` or the shell environment:
+
+```dotenv
+THAURA_API_KEY=your-local-test-key
+```
+
+Run the API tests with:
+
+```powershell
+npx playwright test tests/task01/developer-api-authenticated.spec.ts
+```
+
+The tests skip when no key is configured. API calls are metered; use a dedicated low-balance test key and minimal token limits.
+
+### Task 01 reports
+
+```text
+reports/task01/TASK-01-REPORT.md
+reports/task01/TASK-01-REPORT.html
+```
+
+The report records verified behavior and state-dependent limitations, including quota boundaries, upload parsing, Memory persistence, funded API inference, and unavailable Settings/Account/Billing surfaces.
 
 ## Task 02: Public Website Testing
 
@@ -107,77 +178,6 @@ reports/TASK-02-BUG-REPORT.html
 
 The Markdown file is the editable source of truth; the HTML file is the presentation/submission version.
 
-## Task 01: Chat Product Testing
-
-Task 01 covers the authenticated Thaura chat product: sessions, chat behavior, Free-tier quota, uploads, Memory, Incognito mode, Developer API behavior, and negative/boundary inputs.
-
-### Configure authenticated testing
-
-The login flow uses a dedicated Gmail account and Thaura email OTP. Configure Gmail OAuth once:
-
-1. Enable Gmail API in Google Cloud.
-2. Configure the OAuth consent screen and add the test Gmail account.
-3. Create a Desktop OAuth client and keep its JSON outside the repository.
-4. Generate the local Gmail token:
-
-```powershell
-node scripts/generate-gmail-token.js "C:\path\to\Thaura Gmail OTP Desktop.json"
-```
-
-The exact test email addresses and login method are recorded in the Task 01 report.
-
-Refresh the authenticated Playwright state when needed:
-
-```powershell
-npm run auth:login
-```
-
-This creates the local ignored file `playwright/.auth/user.json`.
-
-### Run the full Task 01 suite
-
-```powershell
-npx playwright test tests/task01
-```
-
-### Run focused Task 01 checks
-
-```powershell
-npx playwright test tests/task01/auth-session.spec.ts
-npx playwright test tests/task01/chat-behavior.spec.ts
-npx playwright test tests/task01/free-tier-quota.spec.ts
-npx playwright test tests/task01/upload-integrity.spec.ts
-npx playwright test tests/task01/memory-incognito.spec.ts
-npx playwright test tests/task01/developer-api-contract.spec.ts
-npx playwright test tests/task01/developer-api-authenticated.spec.ts
-npx playwright test tests/task01/negative-boundary.spec.ts
-```
-
-### Task 01 Developer API configuration
-
-The authenticated API tests read `THAURA_API_KEY` from local `.env` or the shell environment:
-
-```dotenv
-THAURA_API_KEY=your-local-test-key
-```
-
-Run the API tests with:
-
-```powershell
-npx playwright test tests/task01/developer-api-authenticated.spec.ts
-```
-
-The tests skip when no key is configured. API calls are metered; use a dedicated low-balance test key and minimal token limits.
-
-### Task 01 reports
-
-```text
-reports/task01/TASK-01-REPORT.md
-reports/task01/TASK-01-REPORT.html
-```
-
-The report records verified behavior and state-dependent limitations, including quota boundaries, upload parsing, Memory persistence, funded API inference, and unavailable Settings/Account/Billing surfaces.
-
 ## Reports and diagnostics
 
 Playwright's latest interactive report:
@@ -196,4 +196,3 @@ Generated Playwright reports are under `playwright-report/`; failure traces and 
 - Some Task 01 scenarios require fresh account state, quota availability, or API balance.
 - Client-side tests cannot prove server-side backup deletion.
 - Known limitations and deferred coverage are documented in the relevant Task 01 and Task 02 reports.
-
