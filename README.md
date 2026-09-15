@@ -132,6 +132,22 @@ reports/task01/TASK-01-REPORT.html
 
 The report records verified behavior and state-dependent limitations, including quota boundaries, upload parsing, Memory persistence, funded API inference, and unavailable Settings/Account/Billing surfaces.
 
+### Excel bug register
+
+The standardized bug register for both tasks is generated with:
+
+```powershell
+node scripts/generate-bug-report-xlsx.js
+```
+
+Output:
+
+```text
+reports/TASK-01-TASK-02-BUG-REPORT.xlsx
+```
+
+The workbook contains a detailed `Bug Register` sheet and a `Summary` sheet.
+
 ## Task 02: Public Website Testing
 
 Task 02 covers public-site functional correctness, performance, security, and browser/device compatibility.

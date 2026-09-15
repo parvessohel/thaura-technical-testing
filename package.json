@@ -23,6 +23,7 @@
     "dotenv": "^17.4.2",
     "googleapis": "^180.0.0",
     "marked": "^18.0.13",
-    "nunjucks": "^3.2.4"
+    "nunjucks": "^3.2.4",
+    "xlsx": "^0.18.5"
   }
 }
