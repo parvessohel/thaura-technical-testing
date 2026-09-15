@@ -21,13 +21,11 @@ npx playwright install chromium firefox webkit
 
 Public tests do not require Gmail credentials. k6 commands require [k6](https://k6.io/docs/get-started/installation/) to be installed and available on `PATH`.
 
-Secrets are local only. Copy the template when needed, then fill values locally:
+For local authenticated runs, copy the template and fill the required values:
 
 ```powershell
 Copy-Item .env.example .env
 ```
-
-Never commit `.env`, OAuth JSON files, OAuth secrets, Gmail refresh tokens, Thaura session state, or API keys.
 
 ## Task 02: Public Website Testing
 
@@ -126,7 +124,7 @@ The login flow uses a dedicated Gmail account and Thaura email OTP. Configure Gm
 node scripts/generate-gmail-token.js "C:\path\to\Thaura Gmail OTP Desktop.json"
 ```
 
-The exact test email addresses and login method are recorded in the Task 01 report. Do not put OAuth secrets, refresh tokens, session tokens, or API keys in reports.
+The exact test email addresses and login method are recorded in the Task 01 report.
 
 Refresh the authenticated Playwright state when needed:
 
@@ -199,6 +197,3 @@ Generated Playwright reports are under `playwright-report/`; failure traces and 
 - Client-side tests cannot prove server-side backup deletion.
 - Known limitations and deferred coverage are documented in the relevant Task 01 and Task 02 reports.
 
-## Security
-
-The OAuth client used during initial setup was exposed during development. For long-term use, revoke/rotate that OAuth client and regenerate the local refresh token. Revoke exposed API keys as well. Never commit or share `.env` through the repository.
