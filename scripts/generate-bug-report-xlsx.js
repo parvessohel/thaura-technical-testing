@@ -15,9 +15,25 @@ const columns = [
     'Expected',
     'Actual',
     'Evidence',
+    'Request/Response or Console Evidence',
     'Status',
     'Recommendation'
 ];
+
+const evidenceDetails = {
+    'T02-F-001': 'Pricing extraction: monthlyPrice=12, annualPrice=144, statedSaving=20; calculatedSaving=0.',
+    'T02-F-002': 'Pricing page text contains $12/month; FAQ pricing answer contains $15.',
+    'T02-F-003': 'Contact POST returned 200; fields reported maxLength=-1; no reflected script text observed.',
+    'T02-F-004': 'Firefox navigation returned HTTP 200; page remained on loading spinner and body content was empty.',
+    'T02-F-005': 'POST /api/communications/send returned 200; Gmail marker search found no matching message.',
+    'T02-F-006': 'Lighthouse document request for /api returned 401 ERRORED_DOCUMENT_REQUEST.',
+    'T02-F-007': 'Lighthouse captured FCP/LCP/CLS/TBT/Speed Index/root response time; INP/FID was unavailable.',
+    'T01-F-001': 'Free account UI displayed: Out of messages; 5 messages every 5 hours; reset countdown approximately 5 hours.',
+    'T01-F-002': 'Upload UI rendered PDF/CSV/SVG attachment chips; parsing request was not completed due to state-dependent limit.',
+    'T01-F-003': 'Memory panel opened; empty state observed; Incognito control visible and activatable.',
+    'T01-F-004': 'POST /v1/chat/completions with accepted API key returned 402 Insufficient balance; invalid model returned 400.',
+    'T01-F-005': 'Authenticated UI probe exposed account menu but no editable Settings/Account/Billing form controls.'
+};
 
 const findings = [
     {
@@ -118,10 +134,14 @@ const findings = [
     }
 ];
 
+for (const finding of findings) {
+    finding['Request/Response or Console Evidence'] = evidenceDetails[finding['Bug ID']];
+}
+
 const workbook = XLSX.utils.book_new();
 const sheet = XLSX.utils.json_to_sheet(findings, { header: columns });
 sheet['!cols'] = columns.map(column => ({ wch: Math.min(48, Math.max(14, column.length + 4)) }));
-sheet['!autofilter'] = { ref: `A1:K${findings.length + 1}` };
+sheet['!autofilter'] = { ref: `A1:L${findings.length + 1}` };
 XLSX.utils.book_append_sheet(workbook, sheet, 'Bug Register');
 
 const summaryRows = [
