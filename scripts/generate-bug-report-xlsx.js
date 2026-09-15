@@ -41,7 +41,7 @@ const findings = [
         'Steps': 'Open Pricing, select Annual, observe $12/month, $144/year, and Save 20%; calculate $12 x 12.',
         'Expected': 'Monthly price, annual price, and saving percentage are mathematically consistent.',
         'Actual': '$12 x 12 = $144, so the displayed annual price represents 0% saving, not 20%.',
-        'Evidence': 'tests/pricing-consistency.spec.ts; reports/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed defect',
+        'Evidence': 'tests/task02/pricing-consistency.spec.ts; reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed defect',
         'Recommendation': 'Centralize pricing values and correct either the monthly base price or annual discount label.'
     },
     {
@@ -49,7 +49,7 @@ const findings = [
         'Steps': 'Compare the Pro price on Pricing with the expanded pricing answer in FAQ.',
         'Expected': 'All public pages show the same current price.',
         'Actual': 'Pricing shows $12/month while FAQ references $15/month.',
-        'Evidence': 'tests/pricing-consistency.spec.ts; tests/faq-pricing.spec.ts', 'Status': 'Confirmed inconsistency',
+        'Evidence': 'tests/task02/pricing-consistency.spec.ts; tests/task02/faq-pricing.spec.ts', 'Status': 'Confirmed inconsistency',
         'Recommendation': 'Use one shared pricing source for Pricing, FAQ, checkout, and marketing content.'
     },
     {
@@ -57,7 +57,7 @@ const findings = [
         'Steps': 'Inspect name, email, subject, and message fields; submit long Unicode/RTL/script-like input.',
         'Expected': 'Documented length limits are enforced and unusual input is safely handled.',
         'Actual': 'Fields exposed no client-side maxlength; unusual input returned without server error or reflected script.',
-        'Evidence': 'tests/contact-inspection.spec.ts; tests/contact-input-security.spec.ts', 'Status': 'Observation; server limit not independently verified',
+        'Evidence': 'tests/task02/contact-inspection.spec.ts; tests/task02/contact-input-security.spec.ts', 'Status': 'Observation; server limit not independently verified',
         'Recommendation': 'Define and test explicit server-side and client-side field limits.'
     },
     {
@@ -65,7 +65,7 @@ const findings = [
         'Steps': 'Run the compatibility project for Firefox desktop and wait for page hydration.',
         'Expected': 'Homepage renders usable content in Firefox.',
         'Actual': 'Firefox returned 200 but remained on the loading spinner with no rendered body content.',
-        'Evidence': 'tests/compatibility.spec.ts; reports/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed compatibility failure',
+        'Evidence': 'tests/task02/compatibility.spec.ts; reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed compatibility failure',
         'Recommendation': 'Investigate Firefox-specific hydration, JavaScript, or resource-loading behavior.'
     },
     {
@@ -73,7 +73,7 @@ const findings = [
         'Steps': 'Submit a uniquely marked valid Contact form message and search the controlled inbox.',
         'Expected': 'Submitted data is received by the configured recipient.',
         'Actual': 'API/UI submission returned success, but recipient delivery could not be independently verified.',
-        'Evidence': 'tests/contact-submission.spec.ts; TESTING-TODO.md', 'Status': 'Blocked: recipient mailbox unavailable',
+        'Evidence': 'tests/task02/contact-submission.spec.ts; TESTING-TODO.md', 'Status': 'Blocked: recipient mailbox unavailable',
         'Recommendation': 'Identify or configure a controlled recipient mailbox and repeat marker-based delivery verification.'
     },
     {
@@ -81,7 +81,7 @@ const findings = [
         'Steps': 'Run the configured Lighthouse API audit anonymously.',
         'Expected': 'Key-page Lighthouse metrics are captured.',
         'Actual': 'The route returned 401, so performance metrics were unavailable; /api-platform is the public documentation page.',
-        'Evidence': 'reports/lighthouse-api.json; README.md', 'Status': 'Blocked by protected route',
+        'Evidence': 'reports/task02/lighthouse-api.json; README.md', 'Status': 'Blocked by protected route',
         'Recommendation': 'Keep the 401 as evidence or audit /api-platform separately for public documentation performance.'
     },
     {
@@ -89,7 +89,7 @@ const findings = [
         'Steps': 'Review stored Lighthouse lab metrics.',
         'Expected': 'Requested Core Web Vitals are reported where supported.',
         'Actual': 'FCP, LCP, CLS, TBT, Speed Index, and root response time were available; INP/FID was unavailable in lab evidence.',
-        'Evidence': 'reports/lighthouse-home.json; reports/TASK-02-BUG-REPORT.md', 'Status': 'Deferred: metric unavailable',
+        'Evidence': 'reports/task02/lighthouse-home.json; reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Deferred: metric unavailable',
         'Recommendation': 'Use field/RUM data if INP is required; do not infer INP/FID from other metrics.'
     },
     {

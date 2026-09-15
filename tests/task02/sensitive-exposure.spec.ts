@@ -16,6 +16,7 @@ function findMatches(text: string, pattern: RegExp) {
 }
 
 test('Key public pages do not expose credential-shaped secrets or stack traces', async ({ page }) => {
+  test.setTimeout(120_000);
   const findings: Array<{ path: string; location: string; type: string; sample: string }> = [];
 
   for (const path of keyPages) {

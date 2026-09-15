@@ -30,7 +30,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated 2026-09-15T13:00:29.309Z from <code>TASK-02-BUG-REPORT.md</code></p>
+<p class="meta">Generated 2026-09-15T20:30:29.760Z from <code>TASK-02-BUG-REPORT.md</code></p>
 <h1>Task 02: Thaura.ai Website Technical Testing Report</h1>
 <h2>1. Executive Summary</h2>
 <p>Target: <code>https://thaura.ai/</code></p>
@@ -63,17 +63,17 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <tbody><tr>
 <td>Internal and external links resolve</td>
 <td>Pass for discovered public links</td>
-<td><a href="../tests/site-links.spec.ts">site-links.spec.ts</a></td>
+<td><a href="../../tests/task02/site-links.spec.ts">site-links.spec.ts</a></td>
 </tr>
 <tr>
 <td>Contact required fields and email validation</td>
 <td>Pass</td>
-<td><a href="../tests/contact-validation.spec.ts">contact-validation.spec.ts</a></td>
+<td><a href="../../tests/task02/contact-validation.spec.ts">contact-validation.spec.ts</a></td>
 </tr>
 <tr>
 <td>Contact success/API response</td>
 <td>Pass at submission level</td>
-<td><a href="../tests/contact-submission.spec.ts">contact-submission.spec.ts</a></td>
+<td><a href="../../tests/task02/contact-submission.spec.ts">contact-submission.spec.ts</a></td>
 </tr>
 <tr>
 <td>Contact data receipt/delivery</td>
@@ -83,27 +83,27 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <tr>
 <td>Contact length limits</td>
 <td>Finding</td>
-<td><a href="../tests/contact-input-security.spec.ts">contact-input-security.spec.ts</a></td>
+<td><a href="../../tests/task02/contact-input-security.spec.ts">contact-input-security.spec.ts</a></td>
 </tr>
 <tr>
 <td>Pricing calculation and cross-page consistency</td>
 <td>Fail</td>
-<td><a href="../tests/pricing-consistency.spec.ts">pricing-consistency.spec.ts</a></td>
+<td><a href="../../tests/task02/pricing-consistency.spec.ts">pricing-consistency.spec.ts</a></td>
 </tr>
 <tr>
 <td>Canonical, meta, Open Graph, and Twitter metadata</td>
 <td>Pass for key pages</td>
-<td><a href="../tests/metadata.spec.ts">metadata.spec.ts</a></td>
+<td><a href="../../tests/task02/metadata.spec.ts">metadata.spec.ts</a></td>
 </tr>
 <tr>
 <td>Factual and technical claim consistency</td>
 <td>Partial</td>
-<td><a href="../tests/factual-claims.spec.ts">factual-claims.spec.ts</a></td>
+<td><a href="../../tests/task02/factual-claims.spec.ts">factual-claims.spec.ts</a></td>
 </tr>
 <tr>
 <td>Lighthouse key-page audits</td>
 <td>Partial: public pages covered; <code>/api</code> is protected</td>
-<td><code>reports/lighthouse-*.json</code></td>
+<td><code>reports/task02/lighthouse-*.json</code></td>
 </tr>
 <tr>
 <td>Minimum concurrent load testing</td>
@@ -113,47 +113,47 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <tr>
 <td>Media optimization inspection</td>
 <td>Pass with limitations</td>
-<td><a href="../tests/media-optimization.spec.ts">media-optimization.spec.ts</a></td>
+<td><a href="../../tests/task02/media-optimization.spec.ts">media-optimization.spec.ts</a></td>
 </tr>
 <tr>
 <td>Page weight and request counts</td>
 <td>Pass for key pages</td>
-<td><a href="../tests/network-metrics.spec.ts">network-metrics.spec.ts</a></td>
+<td><a href="../../tests/task02/network-metrics.spec.ts">network-metrics.spec.ts</a></td>
 </tr>
 <tr>
 <td>Console and failed-network monitoring</td>
 <td>Pass for public routes</td>
-<td><a href="../tests/public-route-health.spec.ts">public-route-health.spec.ts</a></td>
+<td><a href="../../tests/task02/public-route-health.spec.ts">public-route-health.spec.ts</a></td>
 </tr>
 <tr>
 <td>HTTPS and mixed-content checks</td>
 <td>Pass</td>
-<td><a href="../tests/security-headers.spec.ts">security-headers.spec.ts</a></td>
+<td><a href="../../tests/task02/security-headers.spec.ts">security-headers.spec.ts</a></td>
 </tr>
 <tr>
 <td>Security headers</td>
 <td>Pass for checked pages</td>
-<td><a href="../tests/security-headers.spec.ts">security-headers.spec.ts</a></td>
+<td><a href="../../tests/task02/security-headers.spec.ts">security-headers.spec.ts</a></td>
 </tr>
 <tr>
 <td>Unusual/special-character input</td>
 <td>Pass for Contact form</td>
-<td><a href="../tests/contact-input-security.spec.ts">contact-input-security.spec.ts</a></td>
+<td><a href="../../tests/task02/contact-input-security.spec.ts">contact-input-security.spec.ts</a></td>
 </tr>
 <tr>
 <td>Sensitive-information exposure</td>
 <td>No findings in tested public pages</td>
-<td><a href="../tests/sensitive-exposure.spec.ts">sensitive-exposure.spec.ts</a></td>
+<td><a href="../../tests/task02/sensitive-exposure.spec.ts">sensitive-exposure.spec.ts</a></td>
 </tr>
 <tr>
 <td>Cookie attributes</td>
 <td>Pass for authenticated session cookie</td>
-<td><a href="../tests/authenticated-cookie.spec.ts">authenticated-cookie.spec.ts</a></td>
+<td><a href="../../tests/task02/authenticated-cookie.spec.ts">authenticated-cookie.spec.ts</a></td>
 </tr>
 <tr>
 <td>Cross-browser/device compatibility</td>
 <td>Partial: Firefox render failure</td>
-<td><a href="../tests/compatibility.spec.ts">compatibility.spec.ts</a></td>
+<td><a href="../../tests/task02/compatibility.spec.ts">compatibility.spec.ts</a></td>
 </tr>
 </tbody></table>
 <h2>4. Confirmed Findings</h2>

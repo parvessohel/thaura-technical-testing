@@ -161,13 +161,13 @@ npm test
 ### Run focused Task 02 checks
 
 ```powershell
-npx playwright test tests/site-links.spec.ts
-npx playwright test tests/contact-validation.spec.ts tests/contact-input-security.spec.ts
-npx playwright test tests/pricing-toggle.spec.ts tests/pricing-consistency.spec.ts
-npx playwright test tests/metadata.spec.ts tests/factual-claims.spec.ts
-npx playwright test tests/public-route-health.spec.ts
-npx playwright test tests/network-metrics.spec.ts tests/media-optimization.spec.ts
-npx playwright test tests/security-headers.spec.ts tests/sensitive-exposure.spec.ts
+npx playwright test tests/task02/site-links.spec.ts
+npx playwright test tests/task02/contact-validation.spec.ts tests/task02/contact-input-security.spec.ts
+npx playwright test tests/task02/pricing-toggle.spec.ts tests/task02/pricing-consistency.spec.ts
+npx playwright test tests/task02/metadata.spec.ts tests/task02/factual-claims.spec.ts
+npx playwright test tests/task02/public-route-health.spec.ts
+npx playwright test tests/task02/network-metrics.spec.ts tests/task02/media-optimization.spec.ts
+npx playwright test tests/task02/security-headers.spec.ts tests/task02/sensitive-exposure.spec.ts
 ```
 
 ### Run Task 02 Lighthouse audits
@@ -197,8 +197,8 @@ npm run load:k6:min:report
 The test uses two virtual users for 20 seconds against Home, Pricing, API platform, and FAQ. The report command generates:
 
 ```text
-reports/k6-minimum-summary.json
-reports/k6-minimum-report.html
+reports/task02/k6-minimum-summary.json
+reports/task02/k6-minimum-report.html
 ```
 
 This is a minimum public-read smoke load, not stress or capacity testing.
@@ -222,8 +222,8 @@ npm run report:task02:html
 Outputs:
 
 ```text
-reports/TASK-02-BUG-REPORT.md
-reports/TASK-02-BUG-REPORT.html
+reports/task02/TASK-02-BUG-REPORT.md
+reports/task02/TASK-02-BUG-REPORT.html
 ```
 
 The Markdown file is the editable source of truth; the HTML file is the presentation/submission version.

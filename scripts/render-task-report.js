@@ -3,8 +3,8 @@ const path = require('path');
 const { marked } = require('marked');
 
 const root = path.resolve(__dirname, '..');
-const sourcePath = path.resolve(process.argv[2] || path.join(root, 'reports', 'TASK-02-BUG-REPORT.md'));
-const outputPath = path.resolve(process.argv[3] || path.join(root, 'reports', 'TASK-02-BUG-REPORT.html'));
+const sourcePath = path.resolve(process.argv[2] || path.join(root, 'reports', 'task02', 'TASK-02-BUG-REPORT.md'));
+const outputPath = path.resolve(process.argv[3] || path.join(root, 'reports', 'task02', 'TASK-02-BUG-REPORT.html'));
 
 if (!fs.existsSync(sourcePath)) {
     throw new Error(`Missing Markdown report: ${sourcePath}`);

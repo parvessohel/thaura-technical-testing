@@ -26,25 +26,25 @@ The contact form accepts and submits data successfully at the API/UI level, but 
 
 | Task 02 requirement | Status | Evidence |
 |---|---|---|
-| Internal and external links resolve | Pass for discovered public links | [site-links.spec.ts](../tests/site-links.spec.ts) |
-| Contact required fields and email validation | Pass | [contact-validation.spec.ts](../tests/contact-validation.spec.ts) |
-| Contact success/API response | Pass at submission level | [contact-submission.spec.ts](../tests/contact-submission.spec.ts) |
+| Internal and external links resolve | Pass for discovered public links | [site-links.spec.ts](../../tests/task02/site-links.spec.ts) |
+| Contact required fields and email validation | Pass | [contact-validation.spec.ts](../../tests/task02/contact-validation.spec.ts) |
+| Contact success/API response | Pass at submission level | [contact-submission.spec.ts](../../tests/task02/contact-submission.spec.ts) |
 | Contact data receipt/delivery | Blocked | [TESTING-TODO.md](../TESTING-TODO.md) |
-| Contact length limits | Finding | [contact-input-security.spec.ts](../tests/contact-input-security.spec.ts) |
-| Pricing calculation and cross-page consistency | Fail | [pricing-consistency.spec.ts](../tests/pricing-consistency.spec.ts) |
-| Canonical, meta, Open Graph, and Twitter metadata | Pass for key pages | [metadata.spec.ts](../tests/metadata.spec.ts) |
-| Factual and technical claim consistency | Partial | [factual-claims.spec.ts](../tests/factual-claims.spec.ts) |
-| Lighthouse key-page audits | Partial: public pages covered; `/api` is protected | `reports/lighthouse-*.json` |
+| Contact length limits | Finding | [contact-input-security.spec.ts](../../tests/task02/contact-input-security.spec.ts) |
+| Pricing calculation and cross-page consistency | Fail | [pricing-consistency.spec.ts](../../tests/task02/pricing-consistency.spec.ts) |
+| Canonical, meta, Open Graph, and Twitter metadata | Pass for key pages | [metadata.spec.ts](../../tests/task02/metadata.spec.ts) |
+| Factual and technical claim consistency | Partial | [factual-claims.spec.ts](../../tests/task02/factual-claims.spec.ts) |
+| Lighthouse key-page audits | Partial: public pages covered; `/api` is protected | `reports/task02/lighthouse-*.json` |
 | Minimum concurrent load testing | Pass | [k6-minimum.js](../load/k6-minimum.js) and [k6-minimum-report.html](k6-minimum-report.html) |
-| Media optimization inspection | Pass with limitations | [media-optimization.spec.ts](../tests/media-optimization.spec.ts) |
-| Page weight and request counts | Pass for key pages | [network-metrics.spec.ts](../tests/network-metrics.spec.ts) |
-| Console and failed-network monitoring | Pass for public routes | [public-route-health.spec.ts](../tests/public-route-health.spec.ts) |
-| HTTPS and mixed-content checks | Pass | [security-headers.spec.ts](../tests/security-headers.spec.ts) |
-| Security headers | Pass for checked pages | [security-headers.spec.ts](../tests/security-headers.spec.ts) |
-| Unusual/special-character input | Pass for Contact form | [contact-input-security.spec.ts](../tests/contact-input-security.spec.ts) |
-| Sensitive-information exposure | No findings in tested public pages | [sensitive-exposure.spec.ts](../tests/sensitive-exposure.spec.ts) |
-| Cookie attributes | Pass for authenticated session cookie | [authenticated-cookie.spec.ts](../tests/authenticated-cookie.spec.ts) |
-| Cross-browser/device compatibility | Partial: Firefox render failure | [compatibility.spec.ts](../tests/compatibility.spec.ts) |
+| Media optimization inspection | Pass with limitations | [media-optimization.spec.ts](../../tests/task02/media-optimization.spec.ts) |
+| Page weight and request counts | Pass for key pages | [network-metrics.spec.ts](../../tests/task02/network-metrics.spec.ts) |
+| Console and failed-network monitoring | Pass for public routes | [public-route-health.spec.ts](../../tests/task02/public-route-health.spec.ts) |
+| HTTPS and mixed-content checks | Pass | [security-headers.spec.ts](../../tests/task02/security-headers.spec.ts) |
+| Security headers | Pass for checked pages | [security-headers.spec.ts](../../tests/task02/security-headers.spec.ts) |
+| Unusual/special-character input | Pass for Contact form | [contact-input-security.spec.ts](../../tests/task02/contact-input-security.spec.ts) |
+| Sensitive-information exposure | No findings in tested public pages | [sensitive-exposure.spec.ts](../../tests/task02/sensitive-exposure.spec.ts) |
+| Cookie attributes | Pass for authenticated session cookie | [authenticated-cookie.spec.ts](../../tests/task02/authenticated-cookie.spec.ts) |
+| Cross-browser/device compatibility | Partial: Firefox render failure | [compatibility.spec.ts](../../tests/task02/compatibility.spec.ts) |
 
 ## 4. Confirmed Findings
 

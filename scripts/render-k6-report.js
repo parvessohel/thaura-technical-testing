@@ -3,8 +3,8 @@ const path = require('path');
 const nunjucks = require('nunjucks');
 
 const root = path.resolve(__dirname, '..');
-const summaryPath = path.resolve(process.argv[2] || path.join(root, 'reports', 'k6-minimum-summary.json'));
-const outputPath = path.resolve(process.argv[3] || path.join(root, 'reports', 'k6-minimum-report.html'));
+const summaryPath = path.resolve(process.argv[2] || path.join(root, 'reports', 'task02', 'k6-minimum-summary.json'));
+const outputPath = path.resolve(process.argv[3] || path.join(root, 'reports', 'task02', 'k6-minimum-report.html'));
 const templatePath = path.join(root, 'templates', 'k6-report.njk');
 const routes = ['/', '/pricing', '/api-platform', '/faq'];
 

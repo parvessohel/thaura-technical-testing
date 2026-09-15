@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  testMatch: 'compatibility.spec.ts',
+  testMatch: 'task02/compatibility.spec.ts',
   timeout: 45_000,
   use: {
     baseURL: 'https://thaura.ai',
