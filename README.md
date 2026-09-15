@@ -24,6 +24,12 @@ npx playwright install chromium firefox webkit
 
 The minimum public tests do not require Gmail credentials. The k6 commands also require [k6](https://k6.io/docs/get-started/installation/) to be installed and available on `PATH`.
 
+Authenticated Developer API tests read `THAURA_API_KEY` from the local `.env` file or the shell environment. Copy `.env.example` to `.env`, add the key locally, and never commit or print it:
+
+```powershell
+Copy-Item .env.example .env
+```
+
 ## Run tests
 
 ```powershell
