@@ -93,16 +93,6 @@ npm run report:task02:html
 
 This generates `reports/TASK-02-BUG-REPORT.html` from `reports/TASK-02-BUG-REPORT.md`.
 
-## Run bounded load smoke test
-
-This is a small, non-intrusive concurrent check for the key public pages. It is not a stress test.
-
-```powershell
-npm run load:smoke
-```
-
-Defaults are five concurrent requests and two iterations. Override them when needed with `LOAD_CONCURRENCY` and `LOAD_ITERATIONS`.
-
 ## Run minimum k6 load test
 
 The k6 test performs a conservative public-read load check against Home, Pricing, API, and FAQ using two virtual users for 20 seconds:
