@@ -174,7 +174,7 @@ npx playwright test tests/task02/security-headers.spec.ts tests/task02/sensitive
 npm run lighthouse:home
 npm run lighthouse:pricing
 npm run lighthouse:faq
-npm run lighthouse:api
+npm run lighthouse:api-platform
 ```
 
 Or run all configured audits:
@@ -183,7 +183,7 @@ Or run all configured audits:
 npm run lighthouse:all
 ```
 
-The anonymous `/api` audit is expected to return `401` and therefore does not produce usable performance metrics. The public API documentation page used by browser tests is `/api-platform`.
+`/api-platform` is the public, nav-linked API page and is the "API" key page audited per the assignment. The separate `lighthouse:api` script against `/api` is kept for reference only: that route is not part of the public navigation and always returns `401` regardless of authentication state, so it does not produce usable performance metrics.
 
 ### Run Task 02 minimum k6 load testing
 

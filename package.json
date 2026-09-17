@@ -17,7 +17,8 @@
     "lighthouse:pricing": "lighthouse https://thaura.ai/pricing --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/task02/lighthouse-pricing.json --only-categories=performance,best-practices,seo,accessibility",
     "lighthouse:faq": "lighthouse https://thaura.ai/faq --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/task02/lighthouse-faq.json --only-categories=performance,best-practices,seo,accessibility",
     "lighthouse:api": "lighthouse https://thaura.ai/api --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/task02/lighthouse-api.json --only-categories=performance,best-practices,seo,accessibility",
-    "lighthouse:all": "npm run lighthouse:home && npm run lighthouse:pricing && npm run lighthouse:faq && npm run lighthouse:api"
+    "lighthouse:api-platform": "lighthouse https://thaura.ai/api-platform --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=./reports/task02/lighthouse-api-platform.json --only-categories=performance,best-practices,seo,accessibility",
+    "lighthouse:all": "npm run lighthouse:home && npm run lighthouse:pricing && npm run lighthouse:faq && npm run lighthouse:api-platform"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

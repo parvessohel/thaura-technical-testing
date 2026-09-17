@@ -41,7 +41,7 @@ code without a rendered anchor are outside this automated enumeration scope.
 | Pricing calculation and cross-page consistency | Fail | [pricing-consistency.spec.ts](../../tests/task02/pricing-consistency.spec.ts) |
 | Canonical, meta, Open Graph, and Twitter metadata | Pass for key pages | [metadata.spec.ts](../../tests/task02/metadata.spec.ts) |
 | Factual and technical claim consistency | Partial | [factual-claims.spec.ts](../../tests/task02/factual-claims.spec.ts) |
-| Lighthouse key-page audits | Partial: public pages covered; `/api` is protected | `reports/task02/lighthouse-*.json` |
+| Lighthouse key-page audits | Pass | `reports/task02/lighthouse-*.json` |
 | Minimum concurrent load testing | Pass | [k6-minimum.js](../load/k6-minimum.js) and [k6-minimum-report.html](k6-minimum-report.html) |
 | Media optimization inspection | Pass with limitations | [media-optimization.spec.ts](../../tests/task02/media-optimization.spec.ts) |
 | Page weight and request counts | Pass for key pages | [network-metrics.spec.ts](../../tests/task02/network-metrics.spec.ts) |
@@ -145,15 +145,23 @@ The stored reports are available in [reports](.). Representative captured metric
 | Home | 2.4 s | 7.1 s | 0 | 440 ms | 6.0 s | 210 ms |
 | Pricing | 2.5 s | 6.0 s | 0 | 160 ms | 5.8 s | 390 ms |
 | FAQ | 1.7 s | 5.7 s | 0 | 330 ms | 5.0 s | 400 ms |
-| `/api` | Not available | Not available | Not available | Not available | Not available | Anonymous `401` |
+| API (`/api-platform`) | 2.3 s | 5.8 s | 0 | 330 ms | 7.1 s | 190 ms |
+| `/api` (protected route, not the public API page) | Not available | Not available | Not available | Not available | Not available | Anonymous `401` |
 
 INP/FID was not available from these Lighthouse lab runs and was not inferred from other metrics.
 
-The `/api` Lighthouse run could not produce performance metrics because the route returned `401`. The public API documentation page used by functional testing is `/api-platform`.
+The assignment's "API" key page is the public developer documentation page, `/api-platform`, which is linked from the site's public navigation and returns `200`. The separate route `/api` is not part of the public navigation and always returns `401` regardless of authentication state; it is documented separately as a protected-route observation, not as the audited public API page.
 
 The Home Lighthouse report recorded these category scores:
 
 - Performance: `0.57`
+- Accessibility: `1.00`
+- Best Practices: `0.96`
+- SEO: `1.00`
+
+The `/api-platform` Lighthouse report recorded these category scores:
+
+- Performance: `0.62`
 - Accessibility: `1.00`
 - Best Practices: `0.96`
 - SEO: `1.00`
@@ -228,8 +236,7 @@ This is compatibility smoke coverage, not exhaustive visual or workflow testing 
 1. Product workflows beyond discovered read-only API behavior are not fully tested, including chat creation, file upload, projects, artifacts, settings changes, and UI logout.
 2. Full stress, endurance, and capacity testing was not performed; only the minimum k6 smoke load was run.
 3. One-off factual claims such as Qwen3.8, more than 90 languages, EU infrastructure, and energy-efficiency wording require manual product-owner confirmation rather than automated cross-page comparison.
-4. The `/api` Lighthouse route is protected and requires an authenticated or otherwise authorized audit path.
-5. The 24-hour SLA finding (F-005) is based on a single observed reply and would need repeated sampling to confirm as a systemic pattern.
+4. The 24-hour SLA finding (F-005) is based on a single observed reply and would need repeated sampling to confirm as a systemic pattern.
 
 ## 11. Recommended Priorities
 

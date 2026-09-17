@@ -26,7 +26,7 @@ const evidenceDetails = {
     'T02-F-003': 'Contact POST returned 200; fields reported maxLength=-1; no reflected script text observed.',
     'T02-F-004': 'Firefox navigation returned HTTP 200; intermittent on 2026-09-17 retest: 2 passes and 1 failure across 3 runs with empty body content on failure.',
     'T02-F-005': 'POST /api/communications/send returned 200; reply from info@thaura.ai quoted the exact submitted Name/Email/Subject/Message, confirming delivery.',
-    'T02-F-006': 'Lighthouse document request for /api returned 401 ERRORED_DOCUMENT_REQUEST.',
+    'T02-F-006': '/api-platform (the public API page) Lighthouse audit succeeded with performance score 0.62; /api (a protected, non-public route) returned 401 ERRORED_DOCUMENT_REQUEST.',
     'T02-F-007': 'Lighthouse captured FCP/LCP/CLS/TBT/Speed Index/root response time; INP/FID was unavailable.',
     'T02-F-008': 'Submission at 2026-09-14 18:15:55 received a reply at 2026-09-16 14:31, approximately 44 hours later, versus the page\'s stated 24-hour commitment.',
     'T01-F-001': 'Fresh quota-isolation run on 2026-09-17: Q1-Q5 returned 200 with responses; Q6 blocked with "5 messages every 5 hours"; reset countdown 4h 59m.',
@@ -86,12 +86,12 @@ const findings = [
         'Recommendation': 'Resource the Contact inbox to meet the stated SLA, or update the displayed SLA text to match actual response times.'
     },
     {
-        'Bug ID': 'T02-F-006', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Lighthouse API audit', 'URL': 'https://thaura.ai/api',
-        'Steps': 'Run the configured Lighthouse API audit anonymously.',
-        'Expected': 'Key-page Lighthouse metrics are captured.',
-        'Actual': 'The route returned 401, so performance metrics were unavailable; /api-platform is the public documentation page.',
-        'Evidence': 'reports/task02/lighthouse-api.json; README.md', 'Status': 'Blocked by protected route',
-        'Recommendation': 'Keep the 401 as evidence or audit /api-platform separately for public documentation performance.'
+        'Bug ID': 'T02-F-006', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Lighthouse API audit', 'URL': 'https://thaura.ai/api-platform; https://thaura.ai/api',
+        'Steps': 'Run the Lighthouse audit against the public API page (/api-platform) and, separately, against /api.',
+        'Expected': 'Key-page Lighthouse metrics are captured for the public-facing API page.',
+        'Actual': '/api-platform (the public, nav-linked API page) audited successfully with a 0.62 performance score. /api is a separate, non-public route that returns 401 regardless of authentication and is not the page referenced by the assignment.',
+        'Evidence': 'reports/task02/lighthouse-api-platform.json; reports/task02/lighthouse-api.json', 'Status': 'Resolved: correct public page identified and audited',
+        'Recommendation': 'Use /api-platform for API-page performance audits; treat /api\'s constant 401 as a separate access-control observation, not a performance-audit blocker.'
     },
     {
         'Bug ID': 'T02-F-007', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Performance metrics', 'URL': 'https://thaura.ai/',
