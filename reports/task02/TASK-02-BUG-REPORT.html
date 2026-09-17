@@ -30,7 +30,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated 2026-09-17T16:38:20.304Z from <code>TASK-02-BUG-REPORT.md</code></p>
+<p class="meta">Generated 2026-09-17T16:58:30.079Z from <code>TASK-02-BUG-REPORT.md</code></p>
 <h1>Task 02: Thaura.ai Website Technical Testing Report</h1>
 <h2>1. Executive Summary</h2>
 <p>Target: <code>https://thaura.ai/</code></p>
@@ -282,39 +282,39 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 </thead>
 <tbody><tr>
 <td>Home</td>
-<td align="right">2.3 s</td>
-<td align="right">6.9 s</td>
+<td align="right">3.0 s</td>
+<td align="right">7.3 s</td>
 <td align="right">0</td>
-<td align="right">500 ms</td>
-<td align="right">3.7 s</td>
-<td align="right">210 ms</td>
+<td align="right">530 ms</td>
+<td align="right">4.1 s</td>
+<td align="right">200 ms</td>
 </tr>
 <tr>
 <td>Pricing</td>
-<td align="right">4.5 s</td>
-<td align="right">8.0 s</td>
+<td align="right">2.4 s</td>
+<td align="right">5.9 s</td>
 <td align="right">0</td>
-<td align="right">180 ms</td>
-<td align="right">11.1 s</td>
-<td align="right">400 ms</td>
+<td align="right">380 ms</td>
+<td align="right">9.8 s</td>
+<td align="right">430 ms</td>
 </tr>
 <tr>
 <td>FAQ</td>
-<td align="right">1.7 s</td>
-<td align="right">5.7 s</td>
+<td align="right">1.8 s</td>
+<td align="right">5.8 s</td>
 <td align="right">0</td>
-<td align="right">260 ms</td>
+<td align="right">400 ms</td>
 <td align="right">5.0 s</td>
-<td align="right">190 ms</td>
+<td align="right">390 ms</td>
 </tr>
 <tr>
 <td>API (<code>/api-platform</code>)</td>
-<td align="right">3.0 s</td>
-<td align="right">6.5 s</td>
+<td align="right">2.9 s</td>
+<td align="right">6.3 s</td>
 <td align="right">0</td>
+<td align="right">250 ms</td>
+<td align="right">11.6 s</td>
 <td align="right">200 ms</td>
-<td align="right">8.1 s</td>
-<td align="right">330 ms</td>
 </tr>
 <tr>
 <td><code>/api</code> (protected route, not the public API page)</td>
@@ -330,29 +330,29 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 <p>The assignment&#39;s &quot;API&quot; key page is the public developer documentation page, <code>/api-platform</code>, which is linked from the site&#39;s public navigation and returns <code>200</code>. The separate route <code>/api</code> is not part of the public navigation and always returns <code>401</code> regardless of authentication state; it is documented separately as a protected-route observation, not as the audited public API page.</p>
 <p>The Home Lighthouse report recorded these category scores:</p>
 <ul>
-<li>Performance: <code>0.60</code></li>
+<li>Performance: <code>0.55</code></li>
 <li>Accessibility: <code>1.00</code></li>
 <li>Best Practices: <code>0.96</code></li>
 <li>SEO: <code>1.00</code></li>
 </ul>
 <p>The <code>/api-platform</code> Lighthouse report recorded these category scores:</p>
 <ul>
-<li>Performance: <code>0.61</code></li>
+<li>Performance: <code>0.59</code></li>
 <li>Accessibility: <code>1.00</code></li>
 <li>Best Practices: <code>0.96</code></li>
 <li>SEO: <code>1.00</code></li>
 </ul>
-<p>Performance scores and Core Web Vitals vary noticeably between runs (e.g., Pricing ranged from a 0.55 to a 0.68 performance score across different sessions in this project), consistent with normal lab-run network/server variance rather than a fixed regression; each run&#39;s raw JSON is retained under <code>reports/task02/</code> for exact reproducibility.</p>
+<p>Performance scores and Core Web Vitals vary noticeably between runs (Pricing alone ranged from 0.55 to 0.68 performance score across different sessions in this project), consistent with normal lab-run network/server variance rather than a fixed regression; each run&#39;s raw JSON is retained under <code>reports/task02/</code> for exact reproducibility.</p>
 <h3>k6 minimum load</h3>
 <p>The generated report is <a href="k6-minimum-report.html">k6-minimum-report.html</a>.</p>
 <ul>
 <li>Endpoints: <code>/</code>, <code>/pricing</code>, <code>/api-platform</code>, <code>/faq</code></li>
 <li>Virtual users: 2</li>
 <li>Duration: 20 seconds</li>
-<li>Requests: 26</li>
+<li>Requests: 19 (varies per run based on live response latency within the fixed 20-second window; an earlier run completed 26)</li>
 <li>Failed requests: 0.00%</li>
 <li>Checks succeeded: 100.00%</li>
-<li>p95 response time: 616.43 ms</li>
+<li>p95 response time: 2.66 s (elevated versus an earlier run&#39;s 616 ms, consistent with the general response-time variability observed across this session; still within the 3-second threshold)</li>
 <li>Thresholds: failure rate below 5%; p95 below 3 seconds</li>
 </ul>
 <p>This is a minimum smoke load, not a capacity, endurance, or stress test.</p>

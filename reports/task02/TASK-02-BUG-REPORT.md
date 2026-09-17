@@ -159,10 +159,10 @@ The stored reports are available in [reports](.). Representative captured metric
 
 | Page | FCP | LCP | CLS | TBT | Speed Index | TTFB/root document |
 |---|---:|---:|---:|---:|---:|---:|
-| Home | 2.3 s | 6.9 s | 0 | 500 ms | 3.7 s | 210 ms |
-| Pricing | 4.5 s | 8.0 s | 0 | 180 ms | 11.1 s | 400 ms |
-| FAQ | 1.7 s | 5.7 s | 0 | 260 ms | 5.0 s | 190 ms |
-| API (`/api-platform`) | 3.0 s | 6.5 s | 0 | 200 ms | 8.1 s | 330 ms |
+| Home | 3.0 s | 7.3 s | 0 | 530 ms | 4.1 s | 200 ms |
+| Pricing | 2.4 s | 5.9 s | 0 | 380 ms | 9.8 s | 430 ms |
+| FAQ | 1.8 s | 5.8 s | 0 | 400 ms | 5.0 s | 390 ms |
+| API (`/api-platform`) | 2.9 s | 6.3 s | 0 | 250 ms | 11.6 s | 200 ms |
 | `/api` (protected route, not the public API page) | Not available | Not available | Not available | Not available | Not available | Anonymous `401` |
 
 INP/FID was not available from these Lighthouse lab runs and was not inferred from other metrics.
@@ -171,19 +171,19 @@ The assignment's "API" key page is the public developer documentation page, `/ap
 
 The Home Lighthouse report recorded these category scores:
 
-- Performance: `0.60`
+- Performance: `0.55`
 - Accessibility: `1.00`
 - Best Practices: `0.96`
 - SEO: `1.00`
 
 The `/api-platform` Lighthouse report recorded these category scores:
 
-- Performance: `0.61`
+- Performance: `0.59`
 - Accessibility: `1.00`
 - Best Practices: `0.96`
 - SEO: `1.00`
 
-Performance scores and Core Web Vitals vary noticeably between runs (e.g., Pricing ranged from a 0.55 to a 0.68 performance score across different sessions in this project), consistent with normal lab-run network/server variance rather than a fixed regression; each run's raw JSON is retained under `reports/task02/` for exact reproducibility.
+Performance scores and Core Web Vitals vary noticeably between runs (Pricing alone ranged from 0.55 to 0.68 performance score across different sessions in this project), consistent with normal lab-run network/server variance rather than a fixed regression; each run's raw JSON is retained under `reports/task02/` for exact reproducibility.
 
 ### k6 minimum load
 
@@ -192,10 +192,10 @@ The generated report is [k6-minimum-report.html](k6-minimum-report.html).
 - Endpoints: `/`, `/pricing`, `/api-platform`, `/faq`
 - Virtual users: 2
 - Duration: 20 seconds
-- Requests: 26
+- Requests: 19 (varies per run based on live response latency within the fixed 20-second window; an earlier run completed 26)
 - Failed requests: 0.00%
 - Checks succeeded: 100.00%
-- p95 response time: 616.43 ms
+- p95 response time: 2.66 s (elevated versus an earlier run's 616 ms, consistent with the general response-time variability observed across this session; still within the 3-second threshold)
 - Thresholds: failure rate below 5%; p95 below 3 seconds
 
 This is a minimum smoke load, not a capacity, endurance, or stress test.
