@@ -142,10 +142,10 @@ The stored reports are available in [reports](.). Representative captured metric
 
 | Page | FCP | LCP | CLS | TBT | Speed Index | TTFB/root document |
 |---|---:|---:|---:|---:|---:|---:|
-| Home | 2.4 s | 7.1 s | 0 | 440 ms | 6.0 s | 210 ms |
-| Pricing | 2.5 s | 6.0 s | 0 | 160 ms | 5.8 s | 390 ms |
-| FAQ | 1.7 s | 5.7 s | 0 | 330 ms | 5.0 s | 400 ms |
-| API (`/api-platform`) | 2.3 s | 5.8 s | 0 | 330 ms | 7.1 s | 190 ms |
+| Home | 2.3 s | 6.9 s | 0 | 500 ms | 3.7 s | 210 ms |
+| Pricing | 4.5 s | 8.0 s | 0 | 180 ms | 11.1 s | 400 ms |
+| FAQ | 1.7 s | 5.7 s | 0 | 260 ms | 5.0 s | 190 ms |
+| API (`/api-platform`) | 3.0 s | 6.5 s | 0 | 200 ms | 8.1 s | 330 ms |
 | `/api` (protected route, not the public API page) | Not available | Not available | Not available | Not available | Not available | Anonymous `401` |
 
 INP/FID was not available from these Lighthouse lab runs and was not inferred from other metrics.
@@ -154,17 +154,19 @@ The assignment's "API" key page is the public developer documentation page, `/ap
 
 The Home Lighthouse report recorded these category scores:
 
-- Performance: `0.57`
+- Performance: `0.60`
 - Accessibility: `1.00`
 - Best Practices: `0.96`
 - SEO: `1.00`
 
 The `/api-platform` Lighthouse report recorded these category scores:
 
-- Performance: `0.62`
+- Performance: `0.61`
 - Accessibility: `1.00`
 - Best Practices: `0.96`
 - SEO: `1.00`
+
+Performance scores and Core Web Vitals vary noticeably between runs (e.g., Pricing ranged from a 0.55 to a 0.68 performance score across different sessions in this project), consistent with normal lab-run network/server variance rather than a fixed regression; each run's raw JSON is retained under `reports/task02/` for exact reproducibility.
 
 ### k6 minimum load
 
@@ -176,7 +178,7 @@ The generated report is [k6-minimum-report.html](k6-minimum-report.html).
 - Requests: 26
 - Failed requests: 0.00%
 - Checks succeeded: 100.00%
-- p95 response time: 614.49 ms
+- p95 response time: 616.43 ms
 - Thresholds: failure rate below 5%; p95 below 3 seconds
 
 This is a minimum smoke load, not a capacity, endurance, or stress test.
