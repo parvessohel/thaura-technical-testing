@@ -1,12 +1,13 @@
 # Thaura Testing TODO
 
-## Contact-form delivery
+## Contact-form delivery — RESOLVED
 
 - The contact form submission was accepted with `200 OK` by `backend.thaura.ai/api/communications/send` and the UI displayed a success message.
-- A Gmail search across all folders found no submitted contact marker after the test; the inbox contained only Thaura OTP messages.
-- The Gmail account is therefore confirmed as the OTP mailbox, but not as the contact-form recipient mailbox.
-- Contact-form email delivery remains `Not independently verifiable` until the backend recipient is identified or a controlled recipient is configured.
-- Preferred future option: use MailSlurp, Mailosaur, or another controlled mailbox and verify a unique message marker automatically.
+- The automated marker-based test (synthetic subject line, `contact-submission.spec.ts`) still cannot confirm delivery from the dedicated OTP Gmail account alone, because that account is not the form's recipient mailbox.
+- Independent confirmation was obtained outside of the automated suite: a manual Contact form submission from `shoheltqtec@gmail.com` (Name: Shohel Parves, Subject: "Just checking", submitted 2026-09-14 18:15:55) received a reply from `info@thaura.ai` on 2026-09-16 14:31, sent in response to a forwarded `noreply@thaura.ai` "New Contact Form Submission" notification quoting the same Name, Email, Subject, Date, and Message text that was submitted.
+- This confirms: (1) the contact form's backend delivers submissions to a monitored Thaura mailbox (notifications relayed from `noreply@thaura.ai`, replies sent from `info@thaura.ai`), (2) submitted field data (name/email/subject/message/timestamp) is transmitted accurately end-to-end, and (3) the channel is actively monitored by a human.
+- Secondary observation: the Contact page states "We'll get back to you within 24 hours," but the observed reply arrived roughly 44 hours after submission (2026-09-14 18:15:55 to 2026-09-16 14:31), exceeding the stated SLA for this one observed instance. This is a single data point, not a statistically confirmed pattern.
+- Status updated from `Not independently verifiable` to `Confirmed: delivery verified` in the Task 02 report and Excel bug register.
 
 ## Contact input limits
 

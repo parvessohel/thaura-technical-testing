@@ -11,7 +11,7 @@ The minimum technical testing pass is substantially complete across functional c
 - The FAQ still references `$15/month`.
 - `$15 x 12 = $180`; `$144` is a 20% discount from `$180`.
 
-The contact form accepts and submits data successfully at the API/UI level, but delivery to the actual recipient mailbox cannot be independently verified because the recipient is not exposed and the controlled Gmail account receives OTP messages only.
+The contact form accepts and submits data successfully at the API/UI level, and delivery is now confirmed: a manual submission received a reply from `info@thaura.ai` quoting the exact submitted Name, Email, Subject, and Message, verifying accurate end-to-end delivery. The observed reply took roughly 44 hours, longer than the page's stated 24-hour response commitment.
 
 ## 2. Scope and Environment
 
@@ -36,12 +36,12 @@ code without a rendered anchor are outside this automated enumeration scope.
 | Internal and external links resolve | Pass for all rendered HTTP(S) links on the 14 tested public routes | [site-links.spec.ts](../../tests/task02/site-links.spec.ts) |
 | Contact required fields and email validation | Pass | [contact-validation.spec.ts](../../tests/task02/contact-validation.spec.ts) |
 | Contact success/API response | Pass at submission level | [contact-submission.spec.ts](../../tests/task02/contact-submission.spec.ts) |
-| Contact data receipt/delivery | Blocked | [TESTING-TODO.md](../TESTING-TODO.md) |
+| Contact data receipt/delivery | Pass (confirmed) | [TESTING-TODO.md](../TESTING-TODO.md) |
 | Contact length limits | Finding | [contact-input-security.spec.ts](../../tests/task02/contact-input-security.spec.ts) |
 | Pricing calculation and cross-page consistency | Fail | [pricing-consistency.spec.ts](../../tests/task02/pricing-consistency.spec.ts) |
 | Canonical, meta, Open Graph, and Twitter metadata | Pass for key pages | [metadata.spec.ts](../../tests/task02/metadata.spec.ts) |
 | Factual and technical claim consistency | Partial | [factual-claims.spec.ts](../../tests/task02/factual-claims.spec.ts) |
-| Lighthouse key-page audits | Partial: public pages covered; `/api` is protected | `reports/task02/lighthouse-*.json` |
+| Lighthouse key-page audits | Pass | `reports/task02/lighthouse-*.json` |
 | Minimum concurrent load testing | Pass | [k6-minimum.js](../load/k6-minimum.js) and [k6-minimum-report.html](k6-minimum-report.html) |
 | Media optimization inspection | Pass with limitations | [media-optimization.spec.ts](../../tests/task02/media-optimization.spec.ts) |
 | Page weight and request counts | Pass for key pages | [network-metrics.spec.ts](../../tests/task02/network-metrics.spec.ts) |
@@ -51,7 +51,7 @@ code without a rendered anchor are outside this automated enumeration scope.
 | Unusual/special-character input | Pass for Contact form | [contact-input-security.spec.ts](../../tests/task02/contact-input-security.spec.ts) |
 | Sensitive-information exposure | No findings in tested public pages | [sensitive-exposure.spec.ts](../../tests/task02/sensitive-exposure.spec.ts) |
 | Cookie attributes | Pass for authenticated session cookie | [authenticated-cookie.spec.ts](../../tests/task02/authenticated-cookie.spec.ts) |
-| Cross-browser/device compatibility | Partial: Firefox render failure | [compatibility.spec.ts](../../tests/task02/compatibility.spec.ts) |
+| Cross-browser/device compatibility | Partial: Firefox intermittent render failure | [compatibility.spec.ts](../../tests/task02/compatibility.spec.ts) |
 
 ## 4. Confirmed Findings
 
@@ -76,6 +76,7 @@ code without a rendered anchor are outside this automated enumeration scope.
 - Area: Functional and data correctness
 - URLs: `https://thaura.ai/pricing`, `https://thaura.ai/faq`
 - Actual: Pricing displays `$12/month`; the FAQ answer says pricing is set at `$15`.
+- Supporting evidence: A reply email from `info@thaura.ai` (2026-09-16) independently states Pro is "$15 a month," corroborating the FAQ value and suggesting the live Pricing page's `$12/month` is the outdated/incorrect value.
 - Recommendation: Centralize pricing data and render the same source values across the Pricing page, FAQ, checkout, and marketing copy.
 - Status: Confirmed inconsistency.
 
@@ -89,20 +90,35 @@ code without a rendered anchor are outside this automated enumeration scope.
 - Recommendation: Define documented server-side limits and matching client-side `maxlength` values, then test rejection behavior for oversized payloads.
 - Status: Confirmed observation; server-side limits not observable from the public response.
 
-### F-004: Firefox desktop remains on the loading spinner
+### F-004: Firefox desktop intermittently remains on the loading spinner
 
 - Severity: Medium
 - Area: Cross-browser/device compatibility
 - URL: `https://thaura.ai/`
 - Reproduction:
-  1. Run `npx playwright test --config=playwright.compat.config.ts --project=firefox-desktop`.
-  2. Wait for the page load and hydration window.
-  3. Observe the page remains on the centered loading spinner and body text remains empty.
-- Expected: The public homepage should render usable content in Firefox desktop, as it does in Chromium, WebKit, and mobile Chromium.
-- Actual: Firefox returned HTTP `200` but did not render page content within the test timeout.
+  1. Run `npx playwright test --config=playwright.compat.config.ts --project=firefox-desktop --repeat-each=2` (or more repetitions).
+  2. Wait for the page load and hydration window on each repetition.
+  3. Observe that some runs render content while others remain on the centered loading spinner with empty body text.
+- Expected: The public homepage should reliably render usable content in Firefox desktop on every run, as it does in Chromium, WebKit, and mobile Chromium.
+- Actual: On 2026-09-17 retesting, Firefox desktop passed in a full-suite run and in one of a two-run repetition, but failed on the other repetition with HTTP `200` and no rendered body content within the timeout. The defect is intermittent, not consistently reproducible on every run.
 - Evidence: `test-results/compatibility-Key-public-p-2e403-ss-the-compatibility-matrix-firefox-desktop/test-failed-1.png`.
-- Recommendation: Investigate Firefox-specific hydration, JavaScript, or resource-loading behavior before claiming full cross-browser compatibility.
-- Status: Confirmed compatibility failure in the current test environment.
+- Recommendation: Investigate Firefox-specific hydration, JavaScript, or resource-loading race conditions; an intermittent failure suggests a timing/race issue rather than a hard incompatibility.
+- Status: Confirmed intermittent compatibility issue; not reproducible on every run.
+
+### F-005: Contact-form reply exceeded the stated 24-hour response SLA
+
+- Severity: Low
+- Area: Functional correctness / customer communication
+- URL: `https://thaura.ai/contact`
+- Reproduction:
+  1. Submit a valid Contact form message and note the submission timestamp.
+  2. Observe the page's stated commitment: "We'll get back to you within 24 hours."
+  3. Wait for a reply from Thaura.
+- Expected: A reply arrives within 24 hours of submission, per the page's stated commitment.
+- Actual: A manual submission on 2026-09-14 at 18:15:55 received a reply from `info@thaura.ai` on 2026-09-16 at 14:31, approximately 44 hours later.
+- Evidence: Forwarded reply email quoting the original `noreply@thaura.ai` "New Contact Form Submission" notification (Name: Shohel Parves, Email: shoheltqtec@gmail.com, Subject: "Just checking", Date: 2026-09-14 18:15:55).
+- Recommendation: Either resource the Contact inbox to meet the stated 24-hour commitment or adjust the displayed SLA text to match actual response times.
+- Status: Single-instance observation; not a statistically confirmed pattern.
 
 ## 5. Contact Delivery Result
 
@@ -112,11 +128,11 @@ The Contact form test observed:
 - Response status: `200`
 - UI message: `Message sent successfully! We'll get back to you soon.`
 
-A Gmail search across all folders found no unique contact-form marker. The Gmail account did receive Thaura OTP messages, proving Gmail access works, but it is not confirmed as the Contact form recipient.
+The automated marker-based check could not confirm delivery from the dedicated OTP Gmail account, since that account is not the form's recipient mailbox. Independent confirmation was obtained outside the automated suite: a manual submission from `shoheltqtec@gmail.com` (Name: Shohel Parves, Subject: "Just checking", submitted 2026-09-14 18:15:55) received a reply from `info@thaura.ai` on 2026-09-16 14:31, quoting the original `noreply@thaura.ai` "New Contact Form Submission" notification with the same Name, Email, Subject, Date, and Message that were submitted.
 
 - Submission/API behavior: Verified
-- Actual recipient delivery: Not independently verifiable
-- Required follow-up: identify the backend recipient mailbox or configure a controlled test recipient
+- Actual recipient delivery: **Confirmed.** Notifications route through `noreply@thaura.ai` to a monitored mailbox, and a human replied from `info@thaura.ai` with accurate field data.
+- Secondary observation: the reply arrived roughly 44 hours after submission, exceeding the page's stated 24-hour response commitment (see F-005).
 
 ## 6. Performance Results
 
@@ -126,18 +142,26 @@ The stored reports are available in [reports](.). Representative captured metric
 
 | Page | FCP | LCP | CLS | TBT | Speed Index | TTFB/root document |
 |---|---:|---:|---:|---:|---:|---:|
-| Home | 1.7 s | 6.2 s | 0 | 640 ms | 4.0 s | 190 ms |
-| Pricing | 1.8 s | 5.3 s | 0 | 190 ms | 4.1 s | 430 ms |
-| FAQ | 1.3 s | 5.3 s | 0 | 300 ms | 3.7 s | 390 ms |
-| `/api` | Not available | Not available | Not available | Not available | Not available | Anonymous `401` |
+| Home | 2.4 s | 7.1 s | 0 | 440 ms | 6.0 s | 210 ms |
+| Pricing | 2.5 s | 6.0 s | 0 | 160 ms | 5.8 s | 390 ms |
+| FAQ | 1.7 s | 5.7 s | 0 | 330 ms | 5.0 s | 400 ms |
+| API (`/api-platform`) | 2.3 s | 5.8 s | 0 | 330 ms | 7.1 s | 190 ms |
+| `/api` (protected route, not the public API page) | Not available | Not available | Not available | Not available | Not available | Anonymous `401` |
 
 INP/FID was not available from these Lighthouse lab runs and was not inferred from other metrics.
 
-The `/api` Lighthouse run could not produce performance metrics because the route returned `401`. The public API documentation page used by functional testing is `/api-platform`.
+The assignment's "API" key page is the public developer documentation page, `/api-platform`, which is linked from the site's public navigation and returns `200`. The separate route `/api` is not part of the public navigation and always returns `401` regardless of authentication state; it is documented separately as a protected-route observation, not as the audited public API page.
 
 The Home Lighthouse report recorded these category scores:
 
-- Performance: `0.59`
+- Performance: `0.57`
+- Accessibility: `1.00`
+- Best Practices: `0.96`
+- SEO: `1.00`
+
+The `/api-platform` Lighthouse report recorded these category scores:
+
+- Performance: `0.62`
 - Accessibility: `1.00`
 - Best Practices: `0.96`
 - SEO: `1.00`
@@ -152,7 +176,7 @@ The generated report is [k6-minimum-report.html](k6-minimum-report.html).
 - Requests: 26
 - Failed requests: 0.00%
 - Checks succeeded: 100.00%
-- p95 response time: 633.46 ms
+- p95 response time: 614.49 ms
 - Thresholds: failure rate below 5%; p95 below 3 seconds
 
 This is a minimum smoke load, not a capacity, endurance, or stress test.
@@ -203,23 +227,22 @@ The public homepage smoke test passed on:
 - WebKit desktop
 - Chromium mobile profile
 
-Firefox desktop returned HTTP `200` but remained on the loading spinner with no rendered body content. The compatibility matrix therefore currently fails for Firefox desktop.
+Firefox desktop is intermittent: a 2026-09-17 re-test passed in a full-suite run and in one of a two-run repetition, but failed on another repetition with HTTP `200` and no rendered body content within the timeout. The compatibility matrix therefore currently shows an intermittent, not constant, failure for Firefox desktop (see F-004).
 
 This is compatibility smoke coverage, not exhaustive visual or workflow testing on every device/browser combination.
 
 ## 10. Remaining Limitations
 
-1. Contact-form recipient delivery cannot be independently verified without access to the backend recipient mailbox.
-2. Product workflows beyond discovered read-only API behavior are not fully tested, including chat creation, file upload, projects, artifacts, settings changes, and UI logout.
-3. Full stress, endurance, and capacity testing was not performed; only the minimum k6 smoke load was run.
-4. One-off factual claims such as Qwen3.8, more than 90 languages, EU infrastructure, and energy-efficiency wording require manual product-owner confirmation rather than automated cross-page comparison.
-5. The `/api` Lighthouse route is protected and requires an authenticated or otherwise authorized audit path.
+1. Product workflows beyond discovered read-only API behavior are not fully tested, including chat creation, file upload, projects, artifacts, settings changes, and UI logout.
+2. Full stress, endurance, and capacity testing was not performed; only the minimum k6 smoke load was run.
+3. One-off factual claims such as Qwen3.8, more than 90 languages, EU infrastructure, and energy-efficiency wording require manual product-owner confirmation rather than automated cross-page comparison.
+4. The 24-hour SLA finding (F-005) is based on a single observed reply and would need repeated sampling to confirm as a systemic pattern.
 
 ## 11. Recommended Priorities
 
 1. Correct and centralize the pricing values and discount calculation.
-2. Identify or configure the Contact form recipient for delivery verification.
-3. Add explicit Contact field length limits and server-side rejection tests.
-4. Run authenticated product workflow tests.
-5. Use the k6 script as a baseline before any larger approved load plan.
-6. Obtain product-owner confirmation for one-off factual and sustainability claims.
+2. Add explicit Contact field length limits and server-side rejection tests.
+3. Run authenticated product workflow tests.
+4. Use the k6 script as a baseline before any larger approved load plan.
+5. Obtain product-owner confirmation for one-off factual and sustainability claims.
+6. Monitor Contact-form response times against the stated 24-hour commitment across additional samples.

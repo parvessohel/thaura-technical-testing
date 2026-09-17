@@ -24,15 +24,18 @@ const evidenceDetails = {
     'T02-F-001': 'Pricing extraction: monthlyPrice=12, annualPrice=144, statedSaving=20; calculatedSaving=0.',
     'T02-F-002': 'Pricing page text contains $12/month; FAQ pricing answer contains $15.',
     'T02-F-003': 'Contact POST returned 200; fields reported maxLength=-1; no reflected script text observed.',
-    'T02-F-004': 'Firefox navigation returned HTTP 200; page remained on loading spinner and body content was empty.',
-    'T02-F-005': 'POST /api/communications/send returned 200; Gmail marker search found no matching message.',
-    'T02-F-006': 'Lighthouse document request for /api returned 401 ERRORED_DOCUMENT_REQUEST.',
+    'T02-F-004': 'Firefox navigation returned HTTP 200; intermittent on 2026-09-17 retest: 2 passes and 1 failure across 3 runs with empty body content on failure.',
+    'T02-F-005': 'POST /api/communications/send returned 200; reply from info@thaura.ai quoted the exact submitted Name/Email/Subject/Message, confirming delivery.',
+    'T02-F-006': '/api-platform (the public API page) Lighthouse audit succeeded with performance score 0.62; /api (a protected, non-public route) returned 401 ERRORED_DOCUMENT_REQUEST.',
     'T02-F-007': 'Lighthouse captured FCP/LCP/CLS/TBT/Speed Index/root response time; INP/FID was unavailable.',
-    'T01-F-001': 'Free account UI displayed: Out of messages; 5 messages every 5 hours; reset countdown approximately 5 hours.',
+    'T02-F-008': 'Submission at 2026-09-14 18:15:55 received a reply at 2026-09-16 14:31, approximately 44 hours later, versus the page\'s stated 24-hour commitment.',
+    'T01-F-001': 'Fresh quota-isolation run on 2026-09-17: Q1-Q5 returned 200 with responses; Q6 blocked with "5 messages every 5 hours"; reset countdown 4h 59m.',
     'T01-F-002': 'Upload UI rendered PDF/CSV/SVG attachment chips; parsing request was not completed due to state-dependent limit.',
     'T01-F-003': 'Memory panel opened; empty state observed; Incognito control visible and activatable.',
     'T01-F-004': 'POST /v1/chat/completions with accepted API key returned 402 Insufficient balance; invalid model returned 400.',
-    'T01-F-005': 'Authenticated UI probe exposed account menu but no editable Settings/Account/Billing form controls.'
+    'T01-F-005': 'Authenticated UI probe exposed account menu but no editable Settings/Account/Billing form controls.',
+    'T01-F-006': 'Second-tab and refreshed-session attempts were both quota-blocked; a direct replayed API call returned 429 rate_limit_exceeded with a resetAt timestamp.',
+    'T01-F-007': 'known.pdf (containing marker text "TASK01 PDF MARKER") was attached and the assistant replied with the exact marker text, confirming accurate content extraction.'
 };
 
 const findings = [
@@ -62,27 +65,35 @@ const findings = [
     },
     {
         'Bug ID': 'T02-F-004', 'Task': 'Task 02', 'Severity': 'Medium', 'Area': 'Firefox compatibility', 'URL': 'https://thaura.ai/',
-        'Steps': 'Run the compatibility project for Firefox desktop and wait for page hydration.',
-        'Expected': 'Homepage renders usable content in Firefox.',
-        'Actual': 'Firefox returned 200 but remained on the loading spinner with no rendered body content.',
-        'Evidence': 'tests/task02/compatibility.spec.ts; reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed compatibility failure',
-        'Recommendation': 'Investigate Firefox-specific hydration, JavaScript, or resource-loading behavior.'
+        'Steps': 'Run the compatibility project for Firefox desktop, repeated across multiple runs, and wait for page hydration.',
+        'Expected': 'Homepage reliably renders usable content in Firefox on every run.',
+        'Actual': 'Intermittent: 2026-09-17 retest showed 2 passes and 1 failure across 3 runs; on failure, Firefox returned 200 but remained on the loading spinner with no rendered body content.',
+        'Evidence': 'tests/task02/compatibility.spec.ts; reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed intermittent compatibility issue',
+        'Recommendation': 'Investigate Firefox-specific hydration/timing race condition; not a hard incompatibility since it does not fail every run.'
     },
     {
-        'Bug ID': 'T02-F-005', 'Task': 'Task 02', 'Severity': 'Medium', 'Area': 'Contact delivery', 'URL': 'https://backend.thaura.ai/api/communications/send',
-        'Steps': 'Submit a uniquely marked valid Contact form message and search the controlled inbox.',
+        'Bug ID': 'T02-F-005', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Contact delivery', 'URL': 'https://backend.thaura.ai/api/communications/send',
+        'Steps': 'Submit a valid Contact form message and check for delivery confirmation via reply.',
         'Expected': 'Submitted data is received by the configured recipient.',
-        'Actual': 'API/UI submission returned success, but recipient delivery could not be independently verified.',
-        'Evidence': 'tests/task02/contact-submission.spec.ts; TESTING-TODO.md', 'Status': 'Blocked: recipient mailbox unavailable',
-        'Recommendation': 'Identify or configure a controlled recipient mailbox and repeat marker-based delivery verification.'
+        'Actual': 'API/UI submission returned success; a manual submission received a reply from info@thaura.ai quoting the exact submitted Name, Email, Subject, and Message, confirming end-to-end delivery.',
+        'Evidence': 'tests/task02/contact-submission.spec.ts; TESTING-TODO.md; reply email from info@thaura.ai dated 2026-09-16', 'Status': 'Confirmed: delivery verified',
+        'Recommendation': 'No further action; delivery is confirmed. Consider a controlled mailbox for repeatable automated verification.'
     },
     {
-        'Bug ID': 'T02-F-006', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Lighthouse API audit', 'URL': 'https://thaura.ai/api',
-        'Steps': 'Run the configured Lighthouse API audit anonymously.',
-        'Expected': 'Key-page Lighthouse metrics are captured.',
-        'Actual': 'The route returned 401, so performance metrics were unavailable; /api-platform is the public documentation page.',
-        'Evidence': 'reports/task02/lighthouse-api.json; README.md', 'Status': 'Blocked by protected route',
-        'Recommendation': 'Keep the 401 as evidence or audit /api-platform separately for public documentation performance.'
+        'Bug ID': 'T02-F-008', 'Task': 'Task 02', 'Severity': 'Low', 'Area': 'Contact response SLA', 'URL': 'https://thaura.ai/contact',
+        'Steps': 'Submit a valid Contact form message, note the timestamp, and measure time until a reply arrives.',
+        'Expected': 'A reply arrives within the page\'s stated 24-hour commitment.',
+        'Actual': 'A reply arrived approximately 44 hours after submission, exceeding the stated 24-hour commitment.',
+        'Evidence': 'Reply email from info@thaura.ai dated 2026-09-16 14:31 responding to a submission dated 2026-09-14 18:15:55', 'Status': 'Observation: single instance, not a confirmed pattern',
+        'Recommendation': 'Resource the Contact inbox to meet the stated SLA, or update the displayed SLA text to match actual response times.'
+    },
+    {
+        'Bug ID': 'T02-F-006', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Lighthouse API audit', 'URL': 'https://thaura.ai/api-platform; https://thaura.ai/api',
+        'Steps': 'Run the Lighthouse audit against the public API page (/api-platform) and, separately, against /api.',
+        'Expected': 'Key-page Lighthouse metrics are captured for the public-facing API page.',
+        'Actual': '/api-platform (the public, nav-linked API page) audited successfully with a 0.62 performance score. /api is a separate, non-public route that returns 401 regardless of authentication and is not the page referenced by the assignment.',
+        'Evidence': 'reports/task02/lighthouse-api-platform.json; reports/task02/lighthouse-api.json', 'Status': 'Resolved: correct public page identified and audited',
+        'Recommendation': 'Use /api-platform for API-page performance audits; treat /api\'s constant 401 as a separate access-control observation, not a performance-audit blocker.'
     },
     {
         'Bug ID': 'T02-F-007', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Performance metrics', 'URL': 'https://thaura.ai/',
@@ -94,11 +105,11 @@ const findings = [
     },
     {
         'Bug ID': 'T01-F-001', 'Task': 'Task 01', 'Severity': 'Medium', 'Area': 'Free-tier quota window', 'URL': 'https://thaura.ai/',
-        'Steps': 'Open a Free account after quota exhaustion and inspect the limit message.',
+        'Steps': 'Send 6 sequential prompts from a fresh Free-tier quota bucket and inspect the exact #5/#6 boundary and limit message.',
         'Expected': 'The documented 5-message/2-hour behavior is confirmed.',
-        'Actual': 'The product displayed 5 messages every 5 hours; a fresh #5/#6 boundary run was unavailable.',
-        'Evidence': 'tests/task01/free-tier-quota.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Partial; state-dependent verification deferred',
-        'Recommendation': 'Repeat with a genuinely fresh quota bucket and reconcile the product window with the assignment wording.'
+        'Actual': 'Messages 1-5 succeeded with responses; message 6 was blocked exactly at the boundary. The product displays 5 messages every 5 hours, not the assignment\'s stated 2-hour window.',
+        'Evidence': 'tests/task01/free-tier-quota.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Confirmed: exact boundary verified on a fresh quota bucket',
+        'Recommendation': 'Reconcile the product\'s stated 5-hour reset window with the assignment\'s 2-hour wording.'
     },
     {
         'Bug ID': 'T01-F-002', 'Task': 'Task 01', 'Severity': 'Medium', 'Area': 'Upload data integrity', 'URL': 'https://thaura.ai/',
@@ -131,6 +142,22 @@ const findings = [
         'Actual': 'No editable Settings/Account/Billing surface was exposed in the current UI probe.',
         'Evidence': 'tests/task01/negative-boundary.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Deferred: surface not exposed',
         'Recommendation': 'Locate the product routes or enable the relevant surface, then add field-level boundary tests.'
+    },
+    {
+        'Bug ID': 'T01-F-006', 'Task': 'Task 01', 'Severity': 'Informational', 'Area': 'Free-tier quota bypass resistance', 'URL': 'https://thaura.ai/',
+        'Steps': 'On a fresh quota-exhausted account, attempt a second browser tab, a page refresh, and a direct replayed API call to POST /v1/chat/completions.',
+        'Expected': 'The account-wide quota block cannot be bypassed by any of the three vectors.',
+        'Actual': 'All three vectors remained blocked: second tab blocked, refreshed session still blocked, and the direct API replay returned 429 rate_limit_exceeded.',
+        'Evidence': 'tests/task01/quota-bypass.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Confirmed: quota cannot be bypassed via tested vectors',
+        'Recommendation': 'No action required; continue to enforce the limit server-side rather than relying on client state.'
+    },
+    {
+        'Bug ID': 'T01-F-007', 'Task': 'Task 01', 'Severity': 'Informational', 'Area': 'Upload parsing accuracy', 'URL': 'https://thaura.ai/',
+        'Steps': 'Attach known.pdf (containing the text "TASK01 PDF MARKER") and ask the assistant to reply with the exact marker text found inside it.',
+        'Expected': 'The assistant accurately extracts and reads back the document content, not just acknowledges the attachment.',
+        'Actual': 'The assistant replied with the exact marker text "TASK01 PDF MARKER", confirming accurate PDF content extraction.',
+        'Evidence': 'tests/task01/upload-parsing-accuracy.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Confirmed: parsing accuracy verified for PDF text extraction',
+        'Recommendation': 'Extend the same marker-based approach to spreadsheet and image fixtures for broader parsing-accuracy coverage.'
     }
 ];
 

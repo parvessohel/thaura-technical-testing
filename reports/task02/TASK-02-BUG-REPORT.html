@@ -30,7 +30,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated 2026-09-15T22:14:33.926Z from <code>TASK-02-BUG-REPORT.md</code></p>
+<p class="meta">Generated 2026-09-17T11:41:53.409Z from <code>TASK-02-BUG-REPORT.md</code></p>
 <h1>Task 02: Thaura.ai Website Technical Testing Report</h1>
 <h2>1. Executive Summary</h2>
 <p>Target: <code>https://thaura.ai/</code></p>
@@ -41,7 +41,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <li>The FAQ still references <code>$15/month</code>.</li>
 <li><code>$15 x 12 = $180</code>; <code>$144</code> is a 20% discount from <code>$180</code>.</li>
 </ul>
-<p>The contact form accepts and submits data successfully at the API/UI level, but delivery to the actual recipient mailbox cannot be independently verified because the recipient is not exposed and the controlled Gmail account receives OTP messages only.</p>
+<p>The contact form accepts and submits data successfully at the API/UI level, and delivery is now confirmed: a manual submission received a reply from <code>info@thaura.ai</code> quoting the exact submitted Name, Email, Subject, and Message, verifying accurate end-to-end delivery. The observed reply took roughly 44 hours, longer than the page&#39;s stated 24-hour response commitment.</p>
 <h2>2. Scope and Environment</h2>
 <ul>
 <li>Target: <code>https://thaura.ai/</code></li>
@@ -83,7 +83,7 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 </tr>
 <tr>
 <td>Contact data receipt/delivery</td>
-<td>Blocked</td>
+<td>Pass (confirmed)</td>
 <td><a href="../TESTING-TODO.md">TESTING-TODO.md</a></td>
 </tr>
 <tr>
@@ -108,7 +108,7 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 </tr>
 <tr>
 <td>Lighthouse key-page audits</td>
-<td>Partial: public pages covered; <code>/api</code> is protected</td>
+<td>Pass</td>
 <td><code>reports/task02/lighthouse-*.json</code></td>
 </tr>
 <tr>
@@ -158,7 +158,7 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 </tr>
 <tr>
 <td>Cross-browser/device compatibility</td>
-<td>Partial: Firefox render failure</td>
+<td>Partial: Firefox intermittent render failure</td>
 <td><a href="../../tests/task02/compatibility.spec.ts">compatibility.spec.ts</a></td>
 </tr>
 </tbody></table>
@@ -186,6 +186,7 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 <li>Area: Functional and data correctness</li>
 <li>URLs: <code>https://thaura.ai/pricing</code>, <code>https://thaura.ai/faq</code></li>
 <li>Actual: Pricing displays <code>$12/month</code>; the FAQ answer says pricing is set at <code>$15</code>.</li>
+<li>Supporting evidence: A reply email from <code>info@thaura.ai</code> (2026-09-16) independently states Pro is &quot;$15 a month,&quot; corroborating the FAQ value and suggesting the live Pricing page&#39;s <code>$12/month</code> is the outdated/incorrect value.</li>
 <li>Recommendation: Centralize pricing data and render the same source values across the Pricing page, FAQ, checkout, and marketing copy.</li>
 <li>Status: Confirmed inconsistency.</li>
 </ul>
@@ -199,22 +200,39 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 <li>Recommendation: Define documented server-side limits and matching client-side <code>maxlength</code> values, then test rejection behavior for oversized payloads.</li>
 <li>Status: Confirmed observation; server-side limits not observable from the public response.</li>
 </ul>
-<h3>F-004: Firefox desktop remains on the loading spinner</h3>
+<h3>F-004: Firefox desktop intermittently remains on the loading spinner</h3>
 <ul>
 <li>Severity: Medium</li>
 <li>Area: Cross-browser/device compatibility</li>
 <li>URL: <code>https://thaura.ai/</code></li>
 <li>Reproduction:<ol>
-<li>Run <code>npx playwright test --config=playwright.compat.config.ts --project=firefox-desktop</code>.</li>
-<li>Wait for the page load and hydration window.</li>
-<li>Observe the page remains on the centered loading spinner and body text remains empty.</li>
+<li>Run <code>npx playwright test --config=playwright.compat.config.ts --project=firefox-desktop --repeat-each=2</code> (or more repetitions).</li>
+<li>Wait for the page load and hydration window on each repetition.</li>
+<li>Observe that some runs render content while others remain on the centered loading spinner with empty body text.</li>
 </ol>
 </li>
-<li>Expected: The public homepage should render usable content in Firefox desktop, as it does in Chromium, WebKit, and mobile Chromium.</li>
-<li>Actual: Firefox returned HTTP <code>200</code> but did not render page content within the test timeout.</li>
+<li>Expected: The public homepage should reliably render usable content in Firefox desktop on every run, as it does in Chromium, WebKit, and mobile Chromium.</li>
+<li>Actual: On 2026-09-17 retesting, Firefox desktop passed in a full-suite run and in one of a two-run repetition, but failed on the other repetition with HTTP <code>200</code> and no rendered body content within the timeout. The defect is intermittent, not consistently reproducible on every run.</li>
 <li>Evidence: <code>test-results/compatibility-Key-public-p-2e403-ss-the-compatibility-matrix-firefox-desktop/test-failed-1.png</code>.</li>
-<li>Recommendation: Investigate Firefox-specific hydration, JavaScript, or resource-loading behavior before claiming full cross-browser compatibility.</li>
-<li>Status: Confirmed compatibility failure in the current test environment.</li>
+<li>Recommendation: Investigate Firefox-specific hydration, JavaScript, or resource-loading race conditions; an intermittent failure suggests a timing/race issue rather than a hard incompatibility.</li>
+<li>Status: Confirmed intermittent compatibility issue; not reproducible on every run.</li>
+</ul>
+<h3>F-005: Contact-form reply exceeded the stated 24-hour response SLA</h3>
+<ul>
+<li>Severity: Low</li>
+<li>Area: Functional correctness / customer communication</li>
+<li>URL: <code>https://thaura.ai/contact</code></li>
+<li>Reproduction:<ol>
+<li>Submit a valid Contact form message and note the submission timestamp.</li>
+<li>Observe the page&#39;s stated commitment: &quot;We&#39;ll get back to you within 24 hours.&quot;</li>
+<li>Wait for a reply from Thaura.</li>
+</ol>
+</li>
+<li>Expected: A reply arrives within 24 hours of submission, per the page&#39;s stated commitment.</li>
+<li>Actual: A manual submission on 2026-09-14 at 18:15:55 received a reply from <code>info@thaura.ai</code> on 2026-09-16 at 14:31, approximately 44 hours later.</li>
+<li>Evidence: Forwarded reply email quoting the original <code>noreply@thaura.ai</code> &quot;New Contact Form Submission&quot; notification (Name: Shohel Parves, Email: <a href="mailto:shoheltqtec@gmail.com">shoheltqtec@gmail.com</a>, Subject: &quot;Just checking&quot;, Date: 2026-09-14 18:15:55).</li>
+<li>Recommendation: Either resource the Contact inbox to meet the stated 24-hour commitment or adjust the displayed SLA text to match actual response times.</li>
+<li>Status: Single-instance observation; not a statistically confirmed pattern.</li>
 </ul>
 <h2>5. Contact Delivery Result</h2>
 <p>The Contact form test observed:</p>
@@ -223,11 +241,11 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 <li>Response status: <code>200</code></li>
 <li>UI message: <code>Message sent successfully! We&#39;ll get back to you soon.</code></li>
 </ul>
-<p>A Gmail search across all folders found no unique contact-form marker. The Gmail account did receive Thaura OTP messages, proving Gmail access works, but it is not confirmed as the Contact form recipient.</p>
+<p>The automated marker-based check could not confirm delivery from the dedicated OTP Gmail account, since that account is not the form&#39;s recipient mailbox. Independent confirmation was obtained outside the automated suite: a manual submission from <code>shoheltqtec@gmail.com</code> (Name: Shohel Parves, Subject: &quot;Just checking&quot;, submitted 2026-09-14 18:15:55) received a reply from <code>info@thaura.ai</code> on 2026-09-16 14:31, quoting the original <code>noreply@thaura.ai</code> &quot;New Contact Form Submission&quot; notification with the same Name, Email, Subject, Date, and Message that were submitted.</p>
 <ul>
 <li>Submission/API behavior: Verified</li>
-<li>Actual recipient delivery: Not independently verifiable</li>
-<li>Required follow-up: identify the backend recipient mailbox or configure a controlled test recipient</li>
+<li>Actual recipient delivery: <strong>Confirmed.</strong> Notifications route through <code>noreply@thaura.ai</code> to a monitored mailbox, and a human replied from <code>info@thaura.ai</code> with accurate field data.</li>
+<li>Secondary observation: the reply arrived roughly 44 hours after submission, exceeding the page&#39;s stated 24-hour response commitment (see F-005).</li>
 </ul>
 <h2>6. Performance Results</h2>
 <h3>Lighthouse</h3>
@@ -246,33 +264,42 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 </thead>
 <tbody><tr>
 <td>Home</td>
-<td align="right">1.7 s</td>
-<td align="right">6.2 s</td>
+<td align="right">2.4 s</td>
+<td align="right">7.1 s</td>
 <td align="right">0</td>
-<td align="right">640 ms</td>
-<td align="right">4.0 s</td>
-<td align="right">190 ms</td>
+<td align="right">440 ms</td>
+<td align="right">6.0 s</td>
+<td align="right">210 ms</td>
 </tr>
 <tr>
 <td>Pricing</td>
-<td align="right">1.8 s</td>
-<td align="right">5.3 s</td>
+<td align="right">2.5 s</td>
+<td align="right">6.0 s</td>
 <td align="right">0</td>
-<td align="right">190 ms</td>
-<td align="right">4.1 s</td>
-<td align="right">430 ms</td>
-</tr>
-<tr>
-<td>FAQ</td>
-<td align="right">1.3 s</td>
-<td align="right">5.3 s</td>
-<td align="right">0</td>
-<td align="right">300 ms</td>
-<td align="right">3.7 s</td>
+<td align="right">160 ms</td>
+<td align="right">5.8 s</td>
 <td align="right">390 ms</td>
 </tr>
 <tr>
-<td><code>/api</code></td>
+<td>FAQ</td>
+<td align="right">1.7 s</td>
+<td align="right">5.7 s</td>
+<td align="right">0</td>
+<td align="right">330 ms</td>
+<td align="right">5.0 s</td>
+<td align="right">400 ms</td>
+</tr>
+<tr>
+<td>API (<code>/api-platform</code>)</td>
+<td align="right">2.3 s</td>
+<td align="right">5.8 s</td>
+<td align="right">0</td>
+<td align="right">330 ms</td>
+<td align="right">7.1 s</td>
+<td align="right">190 ms</td>
+</tr>
+<tr>
+<td><code>/api</code> (protected route, not the public API page)</td>
 <td align="right">Not available</td>
 <td align="right">Not available</td>
 <td align="right">Not available</td>
@@ -282,10 +309,17 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 </tr>
 </tbody></table>
 <p>INP/FID was not available from these Lighthouse lab runs and was not inferred from other metrics.</p>
-<p>The <code>/api</code> Lighthouse run could not produce performance metrics because the route returned <code>401</code>. The public API documentation page used by functional testing is <code>/api-platform</code>.</p>
+<p>The assignment&#39;s &quot;API&quot; key page is the public developer documentation page, <code>/api-platform</code>, which is linked from the site&#39;s public navigation and returns <code>200</code>. The separate route <code>/api</code> is not part of the public navigation and always returns <code>401</code> regardless of authentication state; it is documented separately as a protected-route observation, not as the audited public API page.</p>
 <p>The Home Lighthouse report recorded these category scores:</p>
 <ul>
-<li>Performance: <code>0.59</code></li>
+<li>Performance: <code>0.57</code></li>
+<li>Accessibility: <code>1.00</code></li>
+<li>Best Practices: <code>0.96</code></li>
+<li>SEO: <code>1.00</code></li>
+</ul>
+<p>The <code>/api-platform</code> Lighthouse report recorded these category scores:</p>
+<ul>
+<li>Performance: <code>0.62</code></li>
 <li>Accessibility: <code>1.00</code></li>
 <li>Best Practices: <code>0.96</code></li>
 <li>SEO: <code>1.00</code></li>
@@ -299,7 +333,7 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 <li>Requests: 26</li>
 <li>Failed requests: 0.00%</li>
 <li>Checks succeeded: 100.00%</li>
-<li>p95 response time: 633.46 ms</li>
+<li>p95 response time: 614.49 ms</li>
 <li>Thresholds: failure rate below 5%; p95 below 3 seconds</li>
 </ul>
 <p>This is a minimum smoke load, not a capacity, endurance, or stress test.</p>
@@ -367,24 +401,23 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 <li>WebKit desktop</li>
 <li>Chromium mobile profile</li>
 </ul>
-<p>Firefox desktop returned HTTP <code>200</code> but remained on the loading spinner with no rendered body content. The compatibility matrix therefore currently fails for Firefox desktop.</p>
+<p>Firefox desktop is intermittent: a 2026-09-17 re-test passed in a full-suite run and in one of a two-run repetition, but failed on another repetition with HTTP <code>200</code> and no rendered body content within the timeout. The compatibility matrix therefore currently shows an intermittent, not constant, failure for Firefox desktop (see F-004).</p>
 <p>This is compatibility smoke coverage, not exhaustive visual or workflow testing on every device/browser combination.</p>
 <h2>10. Remaining Limitations</h2>
 <ol>
-<li>Contact-form recipient delivery cannot be independently verified without access to the backend recipient mailbox.</li>
 <li>Product workflows beyond discovered read-only API behavior are not fully tested, including chat creation, file upload, projects, artifacts, settings changes, and UI logout.</li>
 <li>Full stress, endurance, and capacity testing was not performed; only the minimum k6 smoke load was run.</li>
 <li>One-off factual claims such as Qwen3.8, more than 90 languages, EU infrastructure, and energy-efficiency wording require manual product-owner confirmation rather than automated cross-page comparison.</li>
-<li>The <code>/api</code> Lighthouse route is protected and requires an authenticated or otherwise authorized audit path.</li>
+<li>The 24-hour SLA finding (F-005) is based on a single observed reply and would need repeated sampling to confirm as a systemic pattern.</li>
 </ol>
 <h2>11. Recommended Priorities</h2>
 <ol>
 <li>Correct and centralize the pricing values and discount calculation.</li>
-<li>Identify or configure the Contact form recipient for delivery verification.</li>
 <li>Add explicit Contact field length limits and server-side rejection tests.</li>
 <li>Run authenticated product workflow tests.</li>
 <li>Use the k6 script as a baseline before any larger approved load plan.</li>
 <li>Obtain product-owner confirmation for one-off factual and sustainability claims.</li>
+<li>Monitor Contact-form response times against the stated 24-hour commitment across additional samples.</li>
 </ol>
 
 </article>

@@ -30,16 +30,19 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated 2026-09-15T22:07:52.512Z from <code>TASK-01-REPORT.md</code></p>
+<p class="meta">Generated 2026-09-17T13:24:23.485Z from <code>TASK-01-REPORT.md</code></p>
 <h1>Task 01: Thaura Web App Technical Testing Report</h1>
 <h2>Scope</h2>
 <p>Target: <code>https://thaura.ai/</code></p>
 <p>This report covers the automated Task 01 work completed on the dedicated Free-tier test account. Secrets, session tokens, OAuth credentials, and API keys are intentionally excluded.</p>
-<p>Final automated validation: <code>16 passed</code> with <code>npx playwright test tests/task01</code>.</p>
+<p>Final automated validation: <code>18 passed</code> with <code>npx playwright test tests/task01</code>.</p>
 <p>Test account details for reproducibility:</p>
 <ul>
 <li>Primary test account email: <code>shoheltqtec@gmail.com</code></li>
 <li>Quota-isolation test email: <code>shoheltqtec+task01quota@gmail.com</code></li>
+<li>Chat-behavior test email: <code>shoheltqtec+task01chat@gmail.com</code></li>
+<li>Upload-parsing test email: <code>shoheltqtec+task01upload@gmail.com</code></li>
+<li>Quota-bypass test email: <code>shoheltqtec+task01bypass@gmail.com</code></li>
 <li>Plan: Free Plan</li>
 <li>Login method: email OTP sent by Thaura and retrieved through the dedicated Gmail inbox</li>
 <li>Browser state: generated locally under <code>playwright/.auth/</code></li>
@@ -76,8 +79,13 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 </tr>
 <tr>
 <td>Free-tier quota observation</td>
-<td>Partial</td>
+<td>Pass</td>
 <td><code>tests/task01/free-tier-quota.spec.ts</code></td>
+</tr>
+<tr>
+<td>Free-tier quota bypass resistance (multi-tab, refresh, direct API)</td>
+<td>Pass</td>
+<td><code>tests/task01/quota-bypass.spec.ts</code></td>
 </tr>
 <tr>
 <td>Upload control and safe fixture selection</td>
@@ -85,9 +93,14 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <td><code>tests/task01/upload-integrity.spec.ts</code></td>
 </tr>
 <tr>
-<td>Upload parsing/data integrity</td>
-<td>Blocked by exhausted quota</td>
-<td><code>tests/task01/upload-integrity.spec.ts</code></td>
+<td>Upload parsing/data integrity (PDF content read back accurately)</td>
+<td>Pass</td>
+<td><code>tests/task01/upload-parsing-accuracy.spec.ts</code></td>
+</tr>
+<tr>
+<td>Upload data isolation across accounts, password-protected/oversized handling</td>
+<td>Not tested</td>
+<td>See Remaining Limitations</td>
 </tr>
 <tr>
 <td>Memory and Incognito controls</td>
@@ -133,14 +146,28 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <li>Prompt and response markers were observed in the UI.</li>
 </ul>
 <h3>Free-tier quota</h3>
-<p>The test account was already exhausted before a fresh #5/#6 boundary run. Thaura displayed:</p>
-<pre><code class="language-text">Out of messages
-Free accounts get 5 messages every 5 hours
-Free messages reset in: approximately 5 hours
+<p>A fresh quota bucket was obtained using the dedicated quota-isolation account (<code>shoheltqtec+task01quota@gmail.com</code>) on 2026-09-17. Six sequential prompts were sent and observed exactly at the boundary:</p>
+<ul>
+<li>Messages 1 through 5 (<code>Q1</code>-<code>Q5</code>) each returned <code>200</code> and rendered an assistant response.</li>
+<li>Message 6 (<code>Q6</code>) returned no completion response and the UI displayed the quota-block state instead.</li>
+</ul>
+<pre><code class="language-text">Out of messages. Here&#39;s the honest ask.
+Free accounts get 5 messages every 5 hours.
+Free messages reset in: 4h 59m
 </code></pre>
-<p>This conflicts with the assignment wording of <code>5 messages / 2 hours</code>. Exact fresh message #5/#6 enforcement and reset behavior remain blocked without a genuinely fresh quota bucket.</p>
+<p>This confirms the product enforces the limit exactly after the 5th message, and independently reconfirms the product&#39;s stated window is <code>5 messages every 5 hours</code>, not the assignment&#39;s <code>5 messages / 2 hours</code>.</p>
 <h3>Upload controls</h3>
-<p>Safe local fixtures were created for PDF, CSV, SVG, corrupted PDF, and empty text. The authenticated upload control accepted document/image fixture selection and rendered attachment chips. Assistant-side parsing accuracy, oversized/password-protected behavior, and cross-account isolation require an available message quota and additional controlled accounts.</p>
+<p>Safe local fixtures were created for PDF, CSV, SVG, corrupted PDF, and empty text. The authenticated upload control accepted document/image fixture selection and rendered attachment chips.</p>
+<p>A fresh dedicated account (<code>shoheltqtec+task01upload@gmail.com</code>) was used to verify actual parsing accuracy, not just UI acceptance: <code>known.pdf</code> (containing the text <code>TASK01 PDF MARKER</code>) was attached and the assistant was asked to read back the exact marker text. The response correctly returned <code>TASK01 PDF MARKER</code>, confirming the assistant genuinely extracts and reads document content rather than only acknowledging the attachment.</p>
+<p>Oversized files, password-protected files, and cross-account upload data isolation were not tested; no fixtures for those cases were created and no second-account cross-read attempt was made.</p>
+<h3>Quota bypass resistance</h3>
+<p>A third fresh dedicated account (<code>shoheltqtec+task01bypass@gmail.com</code>) was used to test whether the Free-tier limit can be circumvented, per the assignment&#39;s named bypass vectors:</p>
+<ul>
+<li><strong>Multiple tabs:</strong> after the account was quota-blocked in one browser context, a second browser context/tab sharing the same authenticated session was also blocked; no additional message was accepted through the second tab.</li>
+<li><strong>Session refresh:</strong> reloading the page in the original tab did not reset or clear the block; the next message attempt was still rejected.</li>
+<li><strong>Direct API call:</strong> the exact request payload the UI itself had sent to <code>POST /v1/chat/completions</code> was replayed directly via an authenticated HTTP request (bypassing the composer/UI entirely). The backend returned <code>429 rate_limit_exceeded</code> (&quot;Free users can send 5 messages every 5 hours&quot;) with a <code>resetAt</code> timestamp, rather than succeeding.</li>
+</ul>
+<p>All three named bypass vectors were blocked; the quota is enforced account-wide at the backend, not just cosmetically in the UI.</p>
 <h3>Memory and Incognito</h3>
 <ul>
 <li>Memory panel opened successfully.</li>
@@ -167,10 +194,10 @@ Free messages reset in: approximately 5 hours
 </ul>
 <h2>Remaining Limitations</h2>
 <ol>
-<li>A fresh quota bucket was unavailable, so exact message #5/#6 and two-hour reset behavior could not be verified.</li>
 <li>The product currently displays a five-hour reset window, conflicting with the task&#39;s two-hour wording.</li>
-<li>Upload parsing accuracy and data-isolation testing require quota and separate controlled accounts.</li>
-<li>Memory persistence versus Incognito leakage requires at least one successful memory-setting conversation.</li>
+<li>Password-protected and oversized upload files were not tested; no fixtures were created for those cases.</li>
+<li>Cross-account upload data isolation was not tested.</li>
+<li>Memory persistence versus Incognito leakage requires at least one successful memory-setting conversation; the primary test account&#39;s quota was exhausted by other test activity before this could be sent.</li>
 <li>Funded Developer API inference, streaming/usage validation, and rate-limit behavior require balance and controlled metered testing.</li>
 <li>Settings/account/billing negative testing was deferred because editable controls were not exposed in the current UI probe.</li>
 </ol>
@@ -178,7 +205,9 @@ Free messages reset in: approximately 5 hours
 <pre><code class="language-powershell">npx playwright test tests/task01/auth-session.spec.ts
 npx playwright test tests/task01/chat-behavior.spec.ts
 npx playwright test tests/task01/free-tier-quota.spec.ts
+npx playwright test tests/task01/quota-bypass.spec.ts
 npx playwright test tests/task01/upload-integrity.spec.ts
+npx playwright test tests/task01/upload-parsing-accuracy.spec.ts
 npx playwright test tests/task01/memory-incognito.spec.ts
 npx playwright test tests/task01/developer-api-contract.spec.ts
 npx playwright test tests/task01/developer-api-authenticated.spec.ts

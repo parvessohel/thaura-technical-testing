@@ -39,9 +39,11 @@ Task 01 authentication additionally requires:
 
 MailSlurp, Mailosaur, and similar controlled-mailbox services were not working
 from the test environment, so Gmail was used for OTP retrieval and authenticated
-test execution instead. Gmail access verified the Thaura login messages; it did
-not identify the backend recipient for Contact-form delivery, which remains
-documented as not independently verifiable in the Task 02 report.
+test execution instead. Gmail access verified the Thaura login messages; the
+dedicated OTP account was never confirmed as the Contact-form recipient, but
+delivery was independently confirmed another way: a manual Contact submission
+received a reply from `info@thaura.ai` quoting the exact submitted fields. See
+the Task 02 report for details.
 
 Task 01 Developer API checks additionally use the optional local value:
 
@@ -74,7 +76,7 @@ The login flow uses a dedicated Gmail account and Thaura email OTP. Configure Gm
 node scripts/generate-gmail-token.js "C:\path\to\Thaura Gmail OTP Desktop.json"
 ```
 
-The exact test email addresses and login method are recorded in the Task 01 report.
+The exact test email addresses and login method are recorded in the Task 01 report. Dedicated fresh accounts (`+task01upload`, `+task01bypass`) are used for the upload-parsing-accuracy and quota-bypass tests so their quota state does not interfere with the other suites.
 
 Refresh the authenticated Playwright state when needed:
 
@@ -82,7 +84,12 @@ Refresh the authenticated Playwright state when needed:
 npm run auth:login
 ```
 
-This creates the local ignored file `playwright/.auth/user.json`.
+This creates the local ignored file `playwright/.auth/user.json`. To create the additional dedicated states, run:
+
+```powershell
+node scripts/login-as.js "you+task01upload@gmail.com" "playwright/.auth/task01-upload.json"
+node scripts/login-as.js "you+task01bypass@gmail.com" "playwright/.auth/task01-bypass.json"
+```
 
 ### Run the full Task 01 suite
 
@@ -96,7 +103,9 @@ npx playwright test tests/task01
 npx playwright test tests/task01/auth-session.spec.ts
 npx playwright test tests/task01/chat-behavior.spec.ts
 npx playwright test tests/task01/free-tier-quota.spec.ts
+npx playwright test tests/task01/quota-bypass.spec.ts
 npx playwright test tests/task01/upload-integrity.spec.ts
+npx playwright test tests/task01/upload-parsing-accuracy.spec.ts
 npx playwright test tests/task01/memory-incognito.spec.ts
 npx playwright test tests/task01/developer-api-contract.spec.ts
 npx playwright test tests/task01/developer-api-authenticated.spec.ts
@@ -172,7 +181,7 @@ npx playwright test tests/task02/security-headers.spec.ts tests/task02/sensitive
 npm run lighthouse:home
 npm run lighthouse:pricing
 npm run lighthouse:faq
-npm run lighthouse:api
+npm run lighthouse:api-platform
 ```
 
 Or run all configured audits:
@@ -181,7 +190,7 @@ Or run all configured audits:
 npm run lighthouse:all
 ```
 
-The anonymous `/api` audit is expected to return `401` and therefore does not produce usable performance metrics. The public API documentation page used by browser tests is `/api-platform`.
+`/api-platform` is the public, nav-linked API page and is the "API" key page audited per the assignment. The separate `lighthouse:api` script against `/api` is kept for reference only: that route is not part of the public navigation and always returns `401` regardless of authentication state, so it does not produce usable performance metrics.
 
 ### Run Task 02 minimum k6 load testing
 
