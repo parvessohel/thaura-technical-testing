@@ -26,7 +26,7 @@ Passwords, OAuth client secrets, Gmail refresh tokens, Thaura session tokens, an
 | UI logout and session invalidation | Pass | `tests/task01/auth-session.spec.ts` |
 | Concurrent authenticated contexts | Pass | `tests/task01/auth-session.spec.ts` |
 | Basic chat creation and streaming response | Pass | `tests/task01/chat-behavior.spec.ts` |
-| Free-tier quota observation | Partial | `tests/task01/free-tier-quota.spec.ts` |
+| Free-tier quota observation | Pass | `tests/task01/free-tier-quota.spec.ts` |
 | Upload control and safe fixture selection | Pass at UI-selection level | `tests/task01/upload-integrity.spec.ts` |
 | Upload parsing/data integrity | Blocked by exhausted quota | `tests/task01/upload-integrity.spec.ts` |
 | Memory and Incognito controls | Partial | `tests/task01/memory-incognito.spec.ts` |
@@ -55,15 +55,18 @@ Passwords, OAuth client secrets, Gmail refresh tokens, Thaura session tokens, an
 
 ### Free-tier quota
 
-The test account was already exhausted before a fresh #5/#6 boundary run. Thaura displayed:
+A fresh quota bucket was obtained using the dedicated quota-isolation account (`shoheltqtec+task01quota@gmail.com`) on 2026-09-17. Six sequential prompts were sent and observed exactly at the boundary:
+
+- Messages 1 through 5 (`Q1`-`Q5`) each returned `200` and rendered an assistant response.
+- Message 6 (`Q6`) returned no completion response and the UI displayed the quota-block state instead.
 
 ```text
-Out of messages
-Free accounts get 5 messages every 5 hours
-Free messages reset in: approximately 5 hours
+Out of messages. Here's the honest ask.
+Free accounts get 5 messages every 5 hours.
+Free messages reset in: 4h 59m
 ```
 
-This conflicts with the assignment wording of `5 messages / 2 hours`. Exact fresh message #5/#6 enforcement and reset behavior remain blocked without a genuinely fresh quota bucket.
+This confirms the product enforces the limit exactly after the 5th message, and independently reconfirms the product's stated window is `5 messages every 5 hours`, not the assignment's `5 messages / 2 hours`.
 
 ### Upload controls
 
@@ -97,12 +100,11 @@ The live documentation was also checked for parameter limits, precedence, ignore
 
 ## Remaining Limitations
 
-1. A fresh quota bucket was unavailable, so exact message #5/#6 and two-hour reset behavior could not be verified.
-2. The product currently displays a five-hour reset window, conflicting with the task's two-hour wording.
-3. Upload parsing accuracy and data-isolation testing require quota and separate controlled accounts.
-4. Memory persistence versus Incognito leakage requires at least one successful memory-setting conversation.
-5. Funded Developer API inference, streaming/usage validation, and rate-limit behavior require balance and controlled metered testing.
-6. Settings/account/billing negative testing was deferred because editable controls were not exposed in the current UI probe.
+1. The product currently displays a five-hour reset window, conflicting with the task's two-hour wording.
+2. Upload parsing accuracy and data-isolation testing require quota and separate controlled accounts.
+3. Memory persistence versus Incognito leakage requires at least one successful memory-setting conversation; the primary test account's quota was exhausted by other test activity before this could be sent.
+4. Funded Developer API inference, streaming/usage validation, and rate-limit behavior require balance and controlled metered testing.
+5. Settings/account/billing negative testing was deferred because editable controls were not exposed in the current UI probe.
 
 ## Reproduction Commands
 

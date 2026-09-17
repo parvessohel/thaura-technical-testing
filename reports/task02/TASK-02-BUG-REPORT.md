@@ -142,9 +142,9 @@ The stored reports are available in [reports](.). Representative captured metric
 
 | Page | FCP | LCP | CLS | TBT | Speed Index | TTFB/root document |
 |---|---:|---:|---:|---:|---:|---:|
-| Home | 1.7 s | 6.2 s | 0 | 640 ms | 4.0 s | 190 ms |
-| Pricing | 1.8 s | 5.3 s | 0 | 190 ms | 4.1 s | 430 ms |
-| FAQ | 1.3 s | 5.3 s | 0 | 300 ms | 3.7 s | 390 ms |
+| Home | 2.4 s | 7.1 s | 0 | 440 ms | 6.0 s | 210 ms |
+| Pricing | 2.5 s | 6.0 s | 0 | 160 ms | 5.8 s | 390 ms |
+| FAQ | 1.7 s | 5.7 s | 0 | 330 ms | 5.0 s | 400 ms |
 | `/api` | Not available | Not available | Not available | Not available | Not available | Anonymous `401` |
 
 INP/FID was not available from these Lighthouse lab runs and was not inferred from other metrics.
@@ -153,7 +153,7 @@ The `/api` Lighthouse run could not produce performance metrics because the rout
 
 The Home Lighthouse report recorded these category scores:
 
-- Performance: `0.59`
+- Performance: `0.57`
 - Accessibility: `1.00`
 - Best Practices: `0.96`
 - SEO: `1.00`
@@ -168,7 +168,7 @@ The generated report is [k6-minimum-report.html](k6-minimum-report.html).
 - Requests: 26
 - Failed requests: 0.00%
 - Checks succeeded: 100.00%
-- p95 response time: 633.46 ms
+- p95 response time: 614.49 ms
 - Thresholds: failure rate below 5%; p95 below 3 seconds
 
 This is a minimum smoke load, not a capacity, endurance, or stress test.

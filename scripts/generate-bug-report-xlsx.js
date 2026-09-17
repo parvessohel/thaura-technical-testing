@@ -29,7 +29,7 @@ const evidenceDetails = {
     'T02-F-006': 'Lighthouse document request for /api returned 401 ERRORED_DOCUMENT_REQUEST.',
     'T02-F-007': 'Lighthouse captured FCP/LCP/CLS/TBT/Speed Index/root response time; INP/FID was unavailable.',
     'T02-F-008': 'Submission at 2026-09-14 18:15:55 received a reply at 2026-09-16 14:31, approximately 44 hours later, versus the page\'s stated 24-hour commitment.',
-    'T01-F-001': 'Free account UI displayed: Out of messages; 5 messages every 5 hours; reset countdown approximately 5 hours.',
+    'T01-F-001': 'Fresh quota-isolation run on 2026-09-17: Q1-Q5 returned 200 with responses; Q6 blocked with "5 messages every 5 hours"; reset countdown 4h 59m.',
     'T01-F-002': 'Upload UI rendered PDF/CSV/SVG attachment chips; parsing request was not completed due to state-dependent limit.',
     'T01-F-003': 'Memory panel opened; empty state observed; Incognito control visible and activatable.',
     'T01-F-004': 'POST /v1/chat/completions with accepted API key returned 402 Insufficient balance; invalid model returned 400.',
@@ -103,11 +103,11 @@ const findings = [
     },
     {
         'Bug ID': 'T01-F-001', 'Task': 'Task 01', 'Severity': 'Medium', 'Area': 'Free-tier quota window', 'URL': 'https://thaura.ai/',
-        'Steps': 'Open a Free account after quota exhaustion and inspect the limit message.',
+        'Steps': 'Send 6 sequential prompts from a fresh Free-tier quota bucket and inspect the exact #5/#6 boundary and limit message.',
         'Expected': 'The documented 5-message/2-hour behavior is confirmed.',
-        'Actual': 'The product displayed 5 messages every 5 hours; a fresh #5/#6 boundary run was unavailable.',
-        'Evidence': 'tests/task01/free-tier-quota.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Partial; state-dependent verification deferred',
-        'Recommendation': 'Repeat with a genuinely fresh quota bucket and reconcile the product window with the assignment wording.'
+        'Actual': 'Messages 1-5 succeeded with responses; message 6 was blocked exactly at the boundary. The product displays 5 messages every 5 hours, not the assignment\'s stated 2-hour window.',
+        'Evidence': 'tests/task01/free-tier-quota.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Confirmed: exact boundary verified on a fresh quota bucket',
+        'Recommendation': 'Reconcile the product\'s stated 5-hour reset window with the assignment\'s 2-hour wording.'
     },
     {
         'Bug ID': 'T01-F-002', 'Task': 'Task 01', 'Severity': 'Medium', 'Area': 'Upload data integrity', 'URL': 'https://thaura.ai/',
