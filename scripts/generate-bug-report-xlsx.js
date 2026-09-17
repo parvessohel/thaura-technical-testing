@@ -38,7 +38,7 @@ const evidenceDetails = {
     'T01-F-007': 'known.pdf (containing marker text "TASK01 PDF MARKER") was attached and the assistant replied with the exact marker text, confirming accurate content extraction.',
     'T01-F-008': 'resetAt=2026-09-17T20:32:52.923Z was 21.5s from (firstMessage+5h) vs 25.6s from (lastMessage+5h); the window is anchored to the oldest message.',
     'T01-F-009': 'A malformed POST (messages as a string) returned 400 invalid_messages; all 5 subsequent legitimate messages still succeeded without an early quota block.',
-    'T02-F-009': 'Homepage returned HTTP 200 with an empty rendered body for 30-42+ seconds across repeated attempts on 2026-09-17, while /faq and /pricing rendered normally within seconds.'
+    'T02-F-009': 'Initial measurement: homepage empty body for 30-42+ seconds. Retest after disabling local VPN: 5-17 seconds. Original severe result attributed to local network, not the product.'
 };
 
 const findings = [
@@ -179,12 +179,12 @@ const findings = [
         'Recommendation': 'No action required; only successfully-processed messages count against the Free-tier quota.'
     },
     {
-        'Bug ID': 'T02-F-009', 'Task': 'Task 02', 'Severity': 'High', 'Area': 'Homepage performance/availability', 'URL': 'https://thaura.ai/',
-        'Steps': 'Navigate to the homepage in headless Chromium (anonymous and authenticated) and poll body content over time.',
-        'Expected': 'The homepage renders usable content within a few seconds, consistent with other public pages.',
-        'Actual': 'HTTP 200 returned but the body remained empty for 30-42+ seconds across repeated attempts on 2026-09-17; /faq and /pricing rendered normally within seconds in the same session. No console errors or failed requests were observed.',
-        'Evidence': 'Manual Playwright diagnostic script output, 2026-09-17; reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed live observation; may be transient, needs repeated sampling',
-        'Recommendation': 'Investigate homepage-specific server-side rendering/data-fetch latency and add loading feedback or a timeout/fallback.'
+        'Bug ID': 'T02-F-009', 'Task': 'Task 02', 'Severity': 'Low', 'Area': 'Homepage performance', 'URL': 'https://thaura.ai/',
+        'Steps': 'Navigate to the homepage in headless Chromium (anonymous and authenticated) and poll body content over time; compare against /faq in the same session.',
+        'Expected': 'The homepage renders usable content within roughly the same time as other public pages.',
+        'Actual': 'Initial measurement: HTTP 200 with an empty body for 30-42+ seconds. After disabling a local VPN connection that had been active, a retest showed 5-17 seconds to render, versus ~4 seconds for /faq. No console errors or failed requests were observed in either measurement.',
+        'Evidence': 'Manual Playwright diagnostic script output, 2026-09-17 (before and after VPN disabled); reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Corrected: original severe result attributed to local VPN, not the product; small residual timing gap remains as a low-priority observation',
+        'Recommendation': 'Resample the residual homepage-vs-other-pages timing gap under confirmed clean network conditions before treating it as a product issue.'
     }
 ];
 

@@ -144,7 +144,7 @@ The live documentation was also checked for parameter limits, precedence, ignore
 3. Memory persistence versus Incognito leakage requires at least one successful memory-setting conversation; the primary test account's quota was exhausted by other test activity before this could be sent.
 4. Funded Developer API inference, streaming/usage validation, and rate-limit behavior require balance and controlled metered testing.
 5. Settings/account/billing negative testing was deferred because editable controls were not exposed in the current UI probe.
-6. The public homepage (`/`) was observed on 2026-09-17 taking 30-42+ seconds to render any content (status `200`, empty body) for both anonymous and authenticated sessions; see the Task 02 report for the full performance finding. This required increasing the login script's element-wait timeout from 20s to 90s to complete authentication during this session.
+6. An initial 2026-09-17 measurement showed the homepage (`/`) taking 30-42+ seconds to render content; a retest after disabling a local VPN connection dropped this to 5-17 seconds, so the severe original measurement is most likely a local network artifact rather than a product defect (see Task 02 report F-006 for the corrected finding). The login script's element-wait timeout was kept at 90s as a resilience margin regardless.
 
 ## Reproduction Commands
 
