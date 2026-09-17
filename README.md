@@ -39,9 +39,11 @@ Task 01 authentication additionally requires:
 
 MailSlurp, Mailosaur, and similar controlled-mailbox services were not working
 from the test environment, so Gmail was used for OTP retrieval and authenticated
-test execution instead. Gmail access verified the Thaura login messages; it did
-not identify the backend recipient for Contact-form delivery, which remains
-documented as not independently verifiable in the Task 02 report.
+test execution instead. Gmail access verified the Thaura login messages; the
+dedicated OTP account was never confirmed as the Contact-form recipient, but
+delivery was independently confirmed another way: a manual Contact submission
+received a reply from `info@thaura.ai` quoting the exact submitted fields. See
+the Task 02 report for details.
 
 Task 01 Developer API checks additionally use the optional local value:
 

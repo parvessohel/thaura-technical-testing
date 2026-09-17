@@ -25,9 +25,10 @@ const evidenceDetails = {
     'T02-F-002': 'Pricing page text contains $12/month; FAQ pricing answer contains $15.',
     'T02-F-003': 'Contact POST returned 200; fields reported maxLength=-1; no reflected script text observed.',
     'T02-F-004': 'Firefox navigation returned HTTP 200; page remained on loading spinner and body content was empty.',
-    'T02-F-005': 'POST /api/communications/send returned 200; Gmail marker search found no matching message.',
+    'T02-F-005': 'POST /api/communications/send returned 200; reply from info@thaura.ai quoted the exact submitted Name/Email/Subject/Message, confirming delivery.',
     'T02-F-006': 'Lighthouse document request for /api returned 401 ERRORED_DOCUMENT_REQUEST.',
     'T02-F-007': 'Lighthouse captured FCP/LCP/CLS/TBT/Speed Index/root response time; INP/FID was unavailable.',
+    'T02-F-008': 'Submission at 2026-09-14 18:15:55 received a reply at 2026-09-16 14:31, approximately 44 hours later, versus the page\'s stated 24-hour commitment.',
     'T01-F-001': 'Free account UI displayed: Out of messages; 5 messages every 5 hours; reset countdown approximately 5 hours.',
     'T01-F-002': 'Upload UI rendered PDF/CSV/SVG attachment chips; parsing request was not completed due to state-dependent limit.',
     'T01-F-003': 'Memory panel opened; empty state observed; Incognito control visible and activatable.',
@@ -69,12 +70,20 @@ const findings = [
         'Recommendation': 'Investigate Firefox-specific hydration, JavaScript, or resource-loading behavior.'
     },
     {
-        'Bug ID': 'T02-F-005', 'Task': 'Task 02', 'Severity': 'Medium', 'Area': 'Contact delivery', 'URL': 'https://backend.thaura.ai/api/communications/send',
-        'Steps': 'Submit a uniquely marked valid Contact form message and search the controlled inbox.',
+        'Bug ID': 'T02-F-005', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Contact delivery', 'URL': 'https://backend.thaura.ai/api/communications/send',
+        'Steps': 'Submit a valid Contact form message and check for delivery confirmation via reply.',
         'Expected': 'Submitted data is received by the configured recipient.',
-        'Actual': 'API/UI submission returned success, but recipient delivery could not be independently verified.',
-        'Evidence': 'tests/task02/contact-submission.spec.ts; TESTING-TODO.md', 'Status': 'Blocked: recipient mailbox unavailable',
-        'Recommendation': 'Identify or configure a controlled recipient mailbox and repeat marker-based delivery verification.'
+        'Actual': 'API/UI submission returned success; a manual submission received a reply from info@thaura.ai quoting the exact submitted Name, Email, Subject, and Message, confirming end-to-end delivery.',
+        'Evidence': 'tests/task02/contact-submission.spec.ts; TESTING-TODO.md; reply email from info@thaura.ai dated 2026-09-16', 'Status': 'Confirmed: delivery verified',
+        'Recommendation': 'No further action; delivery is confirmed. Consider a controlled mailbox for repeatable automated verification.'
+    },
+    {
+        'Bug ID': 'T02-F-008', 'Task': 'Task 02', 'Severity': 'Low', 'Area': 'Contact response SLA', 'URL': 'https://thaura.ai/contact',
+        'Steps': 'Submit a valid Contact form message, note the timestamp, and measure time until a reply arrives.',
+        'Expected': 'A reply arrives within the page\'s stated 24-hour commitment.',
+        'Actual': 'A reply arrived approximately 44 hours after submission, exceeding the stated 24-hour commitment.',
+        'Evidence': 'Reply email from info@thaura.ai dated 2026-09-16 14:31 responding to a submission dated 2026-09-14 18:15:55', 'Status': 'Observation: single instance, not a confirmed pattern',
+        'Recommendation': 'Resource the Contact inbox to meet the stated SLA, or update the displayed SLA text to match actual response times.'
     },
     {
         'Bug ID': 'T02-F-006', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Lighthouse API audit', 'URL': 'https://thaura.ai/api',

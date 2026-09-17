@@ -11,7 +11,7 @@ The minimum technical testing pass is substantially complete across functional c
 - The FAQ still references `$15/month`.
 - `$15 x 12 = $180`; `$144` is a 20% discount from `$180`.
 
-The contact form accepts and submits data successfully at the API/UI level, but delivery to the actual recipient mailbox cannot be independently verified because the recipient is not exposed and the controlled Gmail account receives OTP messages only.
+The contact form accepts and submits data successfully at the API/UI level, and delivery is now confirmed: a manual submission received a reply from `info@thaura.ai` quoting the exact submitted Name, Email, Subject, and Message, verifying accurate end-to-end delivery. The observed reply took roughly 44 hours, longer than the page's stated 24-hour response commitment.
 
 ## 2. Scope and Environment
 
@@ -36,7 +36,7 @@ code without a rendered anchor are outside this automated enumeration scope.
 | Internal and external links resolve | Pass for all rendered HTTP(S) links on the 14 tested public routes | [site-links.spec.ts](../../tests/task02/site-links.spec.ts) |
 | Contact required fields and email validation | Pass | [contact-validation.spec.ts](../../tests/task02/contact-validation.spec.ts) |
 | Contact success/API response | Pass at submission level | [contact-submission.spec.ts](../../tests/task02/contact-submission.spec.ts) |
-| Contact data receipt/delivery | Blocked | [TESTING-TODO.md](../TESTING-TODO.md) |
+| Contact data receipt/delivery | Pass (confirmed) | [TESTING-TODO.md](../TESTING-TODO.md) |
 | Contact length limits | Finding | [contact-input-security.spec.ts](../../tests/task02/contact-input-security.spec.ts) |
 | Pricing calculation and cross-page consistency | Fail | [pricing-consistency.spec.ts](../../tests/task02/pricing-consistency.spec.ts) |
 | Canonical, meta, Open Graph, and Twitter metadata | Pass for key pages | [metadata.spec.ts](../../tests/task02/metadata.spec.ts) |
@@ -76,6 +76,7 @@ code without a rendered anchor are outside this automated enumeration scope.
 - Area: Functional and data correctness
 - URLs: `https://thaura.ai/pricing`, `https://thaura.ai/faq`
 - Actual: Pricing displays `$12/month`; the FAQ answer says pricing is set at `$15`.
+- Supporting evidence: A reply email from `info@thaura.ai` (2026-09-16) independently states Pro is "$15 a month," corroborating the FAQ value and suggesting the live Pricing page's `$12/month` is the outdated/incorrect value.
 - Recommendation: Centralize pricing data and render the same source values across the Pricing page, FAQ, checkout, and marketing copy.
 - Status: Confirmed inconsistency.
 
@@ -104,6 +105,21 @@ code without a rendered anchor are outside this automated enumeration scope.
 - Recommendation: Investigate Firefox-specific hydration, JavaScript, or resource-loading behavior before claiming full cross-browser compatibility.
 - Status: Confirmed compatibility failure in the current test environment.
 
+### F-005: Contact-form reply exceeded the stated 24-hour response SLA
+
+- Severity: Low
+- Area: Functional correctness / customer communication
+- URL: `https://thaura.ai/contact`
+- Reproduction:
+  1. Submit a valid Contact form message and note the submission timestamp.
+  2. Observe the page's stated commitment: "We'll get back to you within 24 hours."
+  3. Wait for a reply from Thaura.
+- Expected: A reply arrives within 24 hours of submission, per the page's stated commitment.
+- Actual: A manual submission on 2026-09-14 at 18:15:55 received a reply from `info@thaura.ai` on 2026-09-16 at 14:31, approximately 44 hours later.
+- Evidence: Forwarded reply email quoting the original `noreply@thaura.ai` "New Contact Form Submission" notification (Name: Shohel Parves, Email: shoheltqtec@gmail.com, Subject: "Just checking", Date: 2026-09-14 18:15:55).
+- Recommendation: Either resource the Contact inbox to meet the stated 24-hour commitment or adjust the displayed SLA text to match actual response times.
+- Status: Single-instance observation; not a statistically confirmed pattern.
+
 ## 5. Contact Delivery Result
 
 The Contact form test observed:
@@ -112,11 +128,11 @@ The Contact form test observed:
 - Response status: `200`
 - UI message: `Message sent successfully! We'll get back to you soon.`
 
-A Gmail search across all folders found no unique contact-form marker. The Gmail account did receive Thaura OTP messages, proving Gmail access works, but it is not confirmed as the Contact form recipient.
+The automated marker-based check could not confirm delivery from the dedicated OTP Gmail account, since that account is not the form's recipient mailbox. Independent confirmation was obtained outside the automated suite: a manual submission from `shoheltqtec@gmail.com` (Name: Shohel Parves, Subject: "Just checking", submitted 2026-09-14 18:15:55) received a reply from `info@thaura.ai` on 2026-09-16 14:31, quoting the original `noreply@thaura.ai` "New Contact Form Submission" notification with the same Name, Email, Subject, Date, and Message that were submitted.
 
 - Submission/API behavior: Verified
-- Actual recipient delivery: Not independently verifiable
-- Required follow-up: identify the backend recipient mailbox or configure a controlled test recipient
+- Actual recipient delivery: **Confirmed.** Notifications route through `noreply@thaura.ai` to a monitored mailbox, and a human replied from `info@thaura.ai` with accurate field data.
+- Secondary observation: the reply arrived roughly 44 hours after submission, exceeding the page's stated 24-hour response commitment (see F-005).
 
 ## 6. Performance Results
 
@@ -209,17 +225,17 @@ This is compatibility smoke coverage, not exhaustive visual or workflow testing 
 
 ## 10. Remaining Limitations
 
-1. Contact-form recipient delivery cannot be independently verified without access to the backend recipient mailbox.
-2. Product workflows beyond discovered read-only API behavior are not fully tested, including chat creation, file upload, projects, artifacts, settings changes, and UI logout.
-3. Full stress, endurance, and capacity testing was not performed; only the minimum k6 smoke load was run.
-4. One-off factual claims such as Qwen3.8, more than 90 languages, EU infrastructure, and energy-efficiency wording require manual product-owner confirmation rather than automated cross-page comparison.
-5. The `/api` Lighthouse route is protected and requires an authenticated or otherwise authorized audit path.
+1. Product workflows beyond discovered read-only API behavior are not fully tested, including chat creation, file upload, projects, artifacts, settings changes, and UI logout.
+2. Full stress, endurance, and capacity testing was not performed; only the minimum k6 smoke load was run.
+3. One-off factual claims such as Qwen3.8, more than 90 languages, EU infrastructure, and energy-efficiency wording require manual product-owner confirmation rather than automated cross-page comparison.
+4. The `/api` Lighthouse route is protected and requires an authenticated or otherwise authorized audit path.
+5. The 24-hour SLA finding (F-005) is based on a single observed reply and would need repeated sampling to confirm as a systemic pattern.
 
 ## 11. Recommended Priorities
 
 1. Correct and centralize the pricing values and discount calculation.
-2. Identify or configure the Contact form recipient for delivery verification.
-3. Add explicit Contact field length limits and server-side rejection tests.
-4. Run authenticated product workflow tests.
-5. Use the k6 script as a baseline before any larger approved load plan.
-6. Obtain product-owner confirmation for one-off factual and sustainability claims.
+2. Add explicit Contact field length limits and server-side rejection tests.
+3. Run authenticated product workflow tests.
+4. Use the k6 script as a baseline before any larger approved load plan.
+5. Obtain product-owner confirmation for one-off factual and sustainability claims.
+6. Monitor Contact-form response times against the stated 24-hour commitment across additional samples.
