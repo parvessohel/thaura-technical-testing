@@ -15,6 +15,8 @@ Test account details for reproducibility:
 - Chat-behavior test email: `shoheltqtec+task01chat@gmail.com`
 - Upload-parsing test email: `shoheltqtec+task01upload@gmail.com`
 - Quota-bypass test email: `shoheltqtec+task01bypass@gmail.com`
+- Quota-window test email: `shoheltqtec+task01window@gmail.com`
+- Quota-error test email: `shoheltqtec+task01quotaerr@gmail.com`
 - Plan: Free Plan
 - Login method: email OTP sent by Thaura and retrieved through the dedicated Gmail inbox
 - Browser state: generated locally under `playwright/.auth/`
@@ -31,6 +33,8 @@ Passwords, OAuth client secrets, Gmail refresh tokens, Thaura session tokens, an
 | Basic chat creation and streaming response | Pass | `tests/task01/chat-behavior.spec.ts` |
 | Free-tier quota observation | Pass | `tests/task01/free-tier-quota.spec.ts` |
 | Free-tier quota bypass resistance (multi-tab, refresh, direct API) | Pass | `tests/task01/quota-bypass.spec.ts` |
+| Free-tier quota window behavior (rolling vs. fixed, reset anchor) | Pass | `tests/task01/quota-window-behavior.spec.ts` |
+| Failed/errored request quota consumption | Pass | `tests/task01/quota-failed-response.spec.ts` |
 | Upload control and safe fixture selection | Pass at UI-selection level | `tests/task01/upload-integrity.spec.ts` |
 | Upload parsing/data integrity (PDF content read back accurately) | Pass | `tests/task01/upload-parsing-accuracy.spec.ts` |
 | Upload data isolation across accounts, password-protected/oversized handling | Not tested | See Remaining Limitations |
@@ -91,6 +95,22 @@ A third fresh dedicated account (`shoheltqtec+task01bypass@gmail.com`) was used 
 
 All three named bypass vectors were blocked; the quota is enforced account-wide at the backend, not just cosmetically in the UI.
 
+### Quota window behavior (rolling vs. fixed)
+
+A fourth fresh dedicated account (`shoheltqtec+task01window@gmail.com`) was used to determine whether the 5-message window is rolling (extends with each new message) or fixed (anchored to a single point in time). Five messages were sent with recorded timestamps, then a direct API call captured the `429` block response, which included a `resetAt` timestamp.
+
+- First message sent: `2026-09-17T15:32:31.390Z`; last (5th) message sent: `2026-09-17T15:33:18.496Z`.
+- `resetAt` returned by the backend: `2026-09-17T20:32:52.923Z`.
+- `resetAt` is `21.5` seconds from `firstMessageTime + 5 hours`, versus `25.6` seconds from `lastMessageTime + 5 hours`.
+
+Both differences are small, but the reset time is measurably closer to (and consistent with) `first message + 5 hours`. This indicates the window is anchored to the oldest message in the current 5-message bucket (a fixed/sliding-window-log style limiter), not one that resets or extends from the most recent activity.
+
+### Failed/errored request quota consumption
+
+A fifth fresh dedicated account (`shoheltqtec+task01quotaerr@gmail.com`) was used to test whether an errored request still consumes a quota slot. A deliberately malformed request (`messages` sent as a string instead of an array) was sent directly to the completions endpoint first, returning `400 invalid_messages`. Five legitimate messages were then sent through the UI, and all five succeeded (rendered assistant markers `E1`-`E5`) without triggering a quota block.
+
+This confirms the malformed/errored request did **not** consume one of the 5 allowed messages; only successfully-processed messages count against the Free-tier quota.
+
 ### Memory and Incognito
 
 - Memory panel opened successfully.
@@ -119,12 +139,12 @@ The live documentation was also checked for parameter limits, precedence, ignore
 
 ## Remaining Limitations
 
-1. The product currently displays a five-hour reset window, conflicting with the task's two-hour wording.
-2. Password-protected and oversized upload files were not tested; no fixtures were created for those cases.
-3. Cross-account upload data isolation was not tested.
-4. Memory persistence versus Incognito leakage requires at least one successful memory-setting conversation; the primary test account's quota was exhausted by other test activity before this could be sent.
-5. Funded Developer API inference, streaming/usage validation, and rate-limit behavior require balance and controlled metered testing.
-6. Settings/account/billing negative testing was deferred because editable controls were not exposed in the current UI probe.
+1. Password-protected and oversized upload files were not tested; no fixtures were created for those cases.
+2. Cross-account upload data isolation was not tested.
+3. Memory persistence versus Incognito leakage requires at least one successful memory-setting conversation; the primary test account's quota was exhausted by other test activity before this could be sent.
+4. Funded Developer API inference, streaming/usage validation, and rate-limit behavior require balance and controlled metered testing.
+5. Settings/account/billing negative testing was deferred because editable controls were not exposed in the current UI probe.
+6. The public homepage (`/`) was observed on 2026-09-17 taking 30-42+ seconds to render any content (status `200`, empty body) for both anonymous and authenticated sessions; see the Task 02 report for the full performance finding. This required increasing the login script's element-wait timeout from 20s to 90s to complete authentication during this session.
 
 ## Reproduction Commands
 
@@ -133,6 +153,8 @@ npx playwright test tests/task01/auth-session.spec.ts
 npx playwright test tests/task01/chat-behavior.spec.ts
 npx playwright test tests/task01/free-tier-quota.spec.ts
 npx playwright test tests/task01/quota-bypass.spec.ts
+npx playwright test tests/task01/quota-window-behavior.spec.ts
+npx playwright test tests/task01/quota-failed-response.spec.ts
 npx playwright test tests/task01/upload-integrity.spec.ts
 npx playwright test tests/task01/upload-parsing-accuracy.spec.ts
 npx playwright test tests/task01/memory-incognito.spec.ts

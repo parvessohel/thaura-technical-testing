@@ -60,7 +60,7 @@ async function loginViaOtp({
         const emailInput = page.locator(emailSelector).first();
         if (!(await emailInput.count())) {
             const tryControl = page.locator('button, a').filter({ hasText: /Try Thaura/i }).first();
-            await tryControl.waitFor({ state: 'visible', timeout: 20_000 });
+            await tryControl.waitFor({ state: 'visible', timeout: 90_000 });
             await tryControl.click({ force: true });
             await page.waitForTimeout(1_000);
         }

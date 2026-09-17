@@ -30,7 +30,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated 2026-09-17T13:55:07.789Z from <code>TASK-02-BUG-REPORT.md</code></p>
+<p class="meta">Generated 2026-09-17T15:36:20.696Z from <code>TASK-02-BUG-REPORT.md</code></p>
 <h1>Task 02: Thaura.ai Website Technical Testing Report</h1>
 <h2>1. Executive Summary</h2>
 <p>Target: <code>https://thaura.ai/</code></p>
@@ -42,6 +42,7 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <li><code>$15 x 12 = $180</code>; <code>$144</code> is a 20% discount from <code>$180</code>.</li>
 </ul>
 <p>The contact form accepts and submits data successfully at the API/UI level, and delivery is now confirmed: a manual submission received a reply from <code>info@thaura.ai</code> quoting the exact submitted Name, Email, Subject, and Message, verifying accurate end-to-end delivery. The observed reply took roughly 44 hours, longer than the page&#39;s stated 24-hour response commitment.</p>
+<p>A separate, more severe issue was observed live during this testing session: the public homepage (<code>https://thaura.ai/</code>) took 30-42+ seconds to render any visible content (HTTP <code>200</code>, empty body) for both anonymous and authenticated sessions, in Chromium, while other pages (<code>/faq</code>, <code>/pricing</code>) loaded normally within seconds during the same window. See F-006.</p>
 <h2>2. Scope and Environment</h2>
 <ul>
 <li>Target: <code>https://thaura.ai/</code></li>
@@ -234,6 +235,23 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 <li>Recommendation: Either resource the Contact inbox to meet the stated 24-hour commitment or adjust the displayed SLA text to match actual response times.</li>
 <li>Status: Single-instance observation; not a statistically confirmed pattern.</li>
 </ul>
+<h3>F-006: Public homepage rendered no content for 30-42+ seconds during live testing</h3>
+<ul>
+<li>Severity: High</li>
+<li>Area: Functional correctness and performance</li>
+<li>URL: <code>https://thaura.ai/</code></li>
+<li>Reproduction:<ol>
+<li>Navigate to <code>https://thaura.ai/</code> in headless Chromium (anonymous or authenticated).</li>
+<li>Poll the page body content every few seconds.</li>
+<li>Observe the HTTP status and elapsed time until any visible content appears.</li>
+</ol>
+</li>
+<li>Expected: The homepage renders usable content within a few seconds, consistent with other pages on the same site.</li>
+<li>Actual: On 2026-09-17, three consecutive anonymous attempts each returned HTTP <code>200</code> with a completely empty rendered body even after 8+ seconds; a timed retry showed the page remained empty for roughly 37-42 seconds before any content appeared, and an authenticated session on the same domain showed the same empty-body behavior for 19+ seconds. In contrast, <code>/faq</code> and <code>/pricing</code> rendered normally (hundreds to ~2,000 characters of body text) within the same short window during the same session. No console errors or failed network requests were observed during the delay.</li>
+<li>Impact: This directly blocked automated login (the OTP flow&#39;s &quot;Try Thaura&quot; button was not available within the previous 20-second wait) until the wait was increased to 90 seconds, and would degrade or block real users landing on the homepage during this window.</li>
+<li>Recommendation: Investigate homepage-specific server-side rendering or data-fetching latency (the homepage appears to depend on a slower or failing upstream call that <code>/faq</code>/<code>/pricing</code> do not), and add client-side loading feedback or a timeout/fallback so the page does not appear silently blank.</li>
+<li>Status: Confirmed, time-boxed live observation on 2026-09-17; may be transient load-related, but was consistently reproducible across multiple attempts during the observation window. Related to, but broader than, the previously documented Firefox-specific intermittent failure (F-004), since this instance affected Chromium as well.</li>
+</ul>
 <h2>5. Contact Delivery Result</h2>
 <p>The Contact form test observed:</p>
 <ul>
@@ -410,9 +428,11 @@ code without a rendered anchor are outside this automated enumeration scope.</p>
 <li>Full stress, endurance, and capacity testing was not performed; only the minimum k6 smoke load was run.</li>
 <li>One-off factual claims such as Qwen3.8, more than 90 languages, EU infrastructure, and energy-efficiency wording require manual product-owner confirmation rather than automated cross-page comparison.</li>
 <li>The 24-hour SLA finding (F-005) is based on a single observed reply and would need repeated sampling to confirm as a systemic pattern.</li>
+<li>The homepage rendering delay (F-006) was observed within a single testing session; repeated sampling over time (and correlation with server-side logs/APM) would be needed to confirm whether it is a recurring pattern or a one-off load spike.</li>
 </ol>
 <h2>11. Recommended Priorities</h2>
 <ol>
+<li>Investigate the homepage rendering-delay incident (F-006); given the observed 30-42+ second empty-body window, this is the highest-priority item for user-facing impact.</li>
 <li>Correct and centralize the pricing values and discount calculation.</li>
 <li>Add explicit Contact field length limits and server-side rejection tests.</li>
 <li>Run authenticated product workflow tests.</li>

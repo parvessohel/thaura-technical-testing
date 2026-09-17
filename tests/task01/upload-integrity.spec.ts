@@ -5,14 +5,14 @@ const authStatePath = 'playwright/.auth/user.json';
 const fixtureDirectory = path.resolve('tests/task01/fixtures');
 
 test('Task 01 upload control accepts safe document and image fixtures', async ({ browser }) => {
+  test.setTimeout(120_000);
   const context = await browser.newContext({ storageState: authStatePath });
   const page = await context.newPage();
 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(5_000);
 
   const uploadInput = page.locator('input[type="file"]').first();
-  await expect(uploadInput).toHaveAttribute('multiple', '');
+  await expect(uploadInput).toHaveAttribute('multiple', '', { timeout: 60_000 });
 
   const fixtures = [
     path.join(fixtureDirectory, 'known.pdf'),

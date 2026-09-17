@@ -35,7 +35,10 @@ const evidenceDetails = {
     'T01-F-004': 'POST /v1/chat/completions with accepted API key returned 402 Insufficient balance; invalid model returned 400.',
     'T01-F-005': 'Authenticated UI probe exposed account menu but no editable Settings/Account/Billing form controls.',
     'T01-F-006': 'Second-tab and refreshed-session attempts were both quota-blocked; a direct replayed API call returned 429 rate_limit_exceeded with a resetAt timestamp.',
-    'T01-F-007': 'known.pdf (containing marker text "TASK01 PDF MARKER") was attached and the assistant replied with the exact marker text, confirming accurate content extraction.'
+    'T01-F-007': 'known.pdf (containing marker text "TASK01 PDF MARKER") was attached and the assistant replied with the exact marker text, confirming accurate content extraction.',
+    'T01-F-008': 'resetAt=2026-09-17T20:32:52.923Z was 21.5s from (firstMessage+5h) vs 25.6s from (lastMessage+5h); the window is anchored to the oldest message.',
+    'T01-F-009': 'A malformed POST (messages as a string) returned 400 invalid_messages; all 5 subsequent legitimate messages still succeeded without an early quota block.',
+    'T02-F-009': 'Homepage returned HTTP 200 with an empty rendered body for 30-42+ seconds across repeated attempts on 2026-09-17, while /faq and /pricing rendered normally within seconds.'
 };
 
 const findings = [
@@ -158,6 +161,30 @@ const findings = [
         'Actual': 'The assistant replied with the exact marker text "TASK01 PDF MARKER", confirming accurate PDF content extraction.',
         'Evidence': 'tests/task01/upload-parsing-accuracy.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Confirmed: parsing accuracy verified for PDF text extraction',
         'Recommendation': 'Extend the same marker-based approach to spreadsheet and image fixtures for broader parsing-accuracy coverage.'
+    },
+    {
+        'Bug ID': 'T01-F-008', 'Task': 'Task 01', 'Severity': 'Informational', 'Area': 'Free-tier quota window behavior', 'URL': 'https://thaura.ai/',
+        'Steps': 'On a fresh account, send 5 messages with recorded timestamps, then capture the resetAt timestamp from the 429 response on message 6.',
+        'Expected': 'Determine whether the reset window is anchored to the oldest message (fixed) or extends with new activity (rolling).',
+        'Actual': 'resetAt was 21.5s from (first message + 5h) versus 25.6s from (last message + 5h); the window is anchored to the oldest message in the bucket, not extended by new activity.',
+        'Evidence': 'tests/task01/quota-window-behavior.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Confirmed: window is fixed/anchored to the oldest message',
+        'Recommendation': 'No action required; document this reset behavior for user-facing quota messaging.'
+    },
+    {
+        'Bug ID': 'T01-F-009', 'Task': 'Task 01', 'Severity': 'Informational', 'Area': 'Failed-request quota consumption', 'URL': 'https://thaura.ai/',
+        'Steps': 'Send a deliberately malformed completions request (messages as a string) on a fresh account, then send 5 legitimate messages via the UI.',
+        'Expected': 'Determine whether a rejected/errored request still consumes one of the 5 allowed messages.',
+        'Actual': 'The malformed request returned 400; all 5 subsequent legitimate messages still succeeded without an early quota block.',
+        'Evidence': 'tests/task01/quota-failed-response.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Confirmed: errored requests do not consume a quota slot',
+        'Recommendation': 'No action required; only successfully-processed messages count against the Free-tier quota.'
+    },
+    {
+        'Bug ID': 'T02-F-009', 'Task': 'Task 02', 'Severity': 'High', 'Area': 'Homepage performance/availability', 'URL': 'https://thaura.ai/',
+        'Steps': 'Navigate to the homepage in headless Chromium (anonymous and authenticated) and poll body content over time.',
+        'Expected': 'The homepage renders usable content within a few seconds, consistent with other public pages.',
+        'Actual': 'HTTP 200 returned but the body remained empty for 30-42+ seconds across repeated attempts on 2026-09-17; /faq and /pricing rendered normally within seconds in the same session. No console errors or failed requests were observed.',
+        'Evidence': 'Manual Playwright diagnostic script output, 2026-09-17; reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed live observation; may be transient, needs repeated sampling',
+        'Recommendation': 'Investigate homepage-specific server-side rendering/data-fetch latency and add loading feedback or a timeout/fallback.'
     }
 ];
 

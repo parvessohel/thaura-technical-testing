@@ -13,6 +13,8 @@ The minimum technical testing pass is substantially complete across functional c
 
 The contact form accepts and submits data successfully at the API/UI level, and delivery is now confirmed: a manual submission received a reply from `info@thaura.ai` quoting the exact submitted Name, Email, Subject, and Message, verifying accurate end-to-end delivery. The observed reply took roughly 44 hours, longer than the page's stated 24-hour response commitment.
 
+A separate, more severe issue was observed live during this testing session: the public homepage (`https://thaura.ai/`) took 30-42+ seconds to render any visible content (HTTP `200`, empty body) for both anonymous and authenticated sessions, in Chromium, while other pages (`/faq`, `/pricing`) loaded normally within seconds during the same window. See F-006.
+
 ## 2. Scope and Environment
 
 - Target: `https://thaura.ai/`
@@ -119,6 +121,21 @@ code without a rendered anchor are outside this automated enumeration scope.
 - Evidence: Forwarded reply email quoting the original `noreply@thaura.ai` "New Contact Form Submission" notification (Name: Shohel Parves, Email: shoheltqtec@gmail.com, Subject: "Just checking", Date: 2026-09-14 18:15:55).
 - Recommendation: Either resource the Contact inbox to meet the stated 24-hour commitment or adjust the displayed SLA text to match actual response times.
 - Status: Single-instance observation; not a statistically confirmed pattern.
+
+### F-006: Public homepage rendered no content for 30-42+ seconds during live testing
+
+- Severity: High
+- Area: Functional correctness and performance
+- URL: `https://thaura.ai/`
+- Reproduction:
+  1. Navigate to `https://thaura.ai/` in headless Chromium (anonymous or authenticated).
+  2. Poll the page body content every few seconds.
+  3. Observe the HTTP status and elapsed time until any visible content appears.
+- Expected: The homepage renders usable content within a few seconds, consistent with other pages on the same site.
+- Actual: On 2026-09-17, three consecutive anonymous attempts each returned HTTP `200` with a completely empty rendered body even after 8+ seconds; a timed retry showed the page remained empty for roughly 37-42 seconds before any content appeared, and an authenticated session on the same domain showed the same empty-body behavior for 19+ seconds. In contrast, `/faq` and `/pricing` rendered normally (hundreds to ~2,000 characters of body text) within the same short window during the same session. No console errors or failed network requests were observed during the delay.
+- Impact: This directly blocked automated login (the OTP flow's "Try Thaura" button was not available within the previous 20-second wait) until the wait was increased to 90 seconds, and would degrade or block real users landing on the homepage during this window.
+- Recommendation: Investigate homepage-specific server-side rendering or data-fetching latency (the homepage appears to depend on a slower or failing upstream call that `/faq`/`/pricing` do not), and add client-side loading feedback or a timeout/fallback so the page does not appear silently blank.
+- Status: Confirmed, time-boxed live observation on 2026-09-17; may be transient load-related, but was consistently reproducible across multiple attempts during the observation window. Related to, but broader than, the previously documented Firefox-specific intermittent failure (F-004), since this instance affected Chromium as well.
 
 ## 5. Contact Delivery Result
 
@@ -239,12 +256,14 @@ This is compatibility smoke coverage, not exhaustive visual or workflow testing 
 2. Full stress, endurance, and capacity testing was not performed; only the minimum k6 smoke load was run.
 3. One-off factual claims such as Qwen3.8, more than 90 languages, EU infrastructure, and energy-efficiency wording require manual product-owner confirmation rather than automated cross-page comparison.
 4. The 24-hour SLA finding (F-005) is based on a single observed reply and would need repeated sampling to confirm as a systemic pattern.
+5. The homepage rendering delay (F-006) was observed within a single testing session; repeated sampling over time (and correlation with server-side logs/APM) would be needed to confirm whether it is a recurring pattern or a one-off load spike.
 
 ## 11. Recommended Priorities
 
-1. Correct and centralize the pricing values and discount calculation.
-2. Add explicit Contact field length limits and server-side rejection tests.
-3. Run authenticated product workflow tests.
-4. Use the k6 script as a baseline before any larger approved load plan.
-5. Obtain product-owner confirmation for one-off factual and sustainability claims.
-6. Monitor Contact-form response times against the stated 24-hour commitment across additional samples.
+1. Investigate the homepage rendering-delay incident (F-006); given the observed 30-42+ second empty-body window, this is the highest-priority item for user-facing impact.
+2. Correct and centralize the pricing values and discount calculation.
+3. Add explicit Contact field length limits and server-side rejection tests.
+4. Run authenticated product workflow tests.
+5. Use the k6 script as a baseline before any larger approved load plan.
+6. Obtain product-owner confirmation for one-off factual and sustainability claims.
+7. Monitor Contact-form response times against the stated 24-hour commitment across additional samples.
