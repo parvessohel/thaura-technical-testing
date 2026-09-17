@@ -51,7 +51,7 @@ code without a rendered anchor are outside this automated enumeration scope.
 | Unusual/special-character input | Pass for Contact form | [contact-input-security.spec.ts](../../tests/task02/contact-input-security.spec.ts) |
 | Sensitive-information exposure | No findings in tested public pages | [sensitive-exposure.spec.ts](../../tests/task02/sensitive-exposure.spec.ts) |
 | Cookie attributes | Pass for authenticated session cookie | [authenticated-cookie.spec.ts](../../tests/task02/authenticated-cookie.spec.ts) |
-| Cross-browser/device compatibility | Partial: Firefox render failure | [compatibility.spec.ts](../../tests/task02/compatibility.spec.ts) |
+| Cross-browser/device compatibility | Partial: Firefox intermittent render failure | [compatibility.spec.ts](../../tests/task02/compatibility.spec.ts) |
 
 ## 4. Confirmed Findings
 
@@ -90,20 +90,20 @@ code without a rendered anchor are outside this automated enumeration scope.
 - Recommendation: Define documented server-side limits and matching client-side `maxlength` values, then test rejection behavior for oversized payloads.
 - Status: Confirmed observation; server-side limits not observable from the public response.
 
-### F-004: Firefox desktop remains on the loading spinner
+### F-004: Firefox desktop intermittently remains on the loading spinner
 
 - Severity: Medium
 - Area: Cross-browser/device compatibility
 - URL: `https://thaura.ai/`
 - Reproduction:
-  1. Run `npx playwright test --config=playwright.compat.config.ts --project=firefox-desktop`.
-  2. Wait for the page load and hydration window.
-  3. Observe the page remains on the centered loading spinner and body text remains empty.
-- Expected: The public homepage should render usable content in Firefox desktop, as it does in Chromium, WebKit, and mobile Chromium.
-- Actual: Firefox returned HTTP `200` but did not render page content within the test timeout.
+  1. Run `npx playwright test --config=playwright.compat.config.ts --project=firefox-desktop --repeat-each=2` (or more repetitions).
+  2. Wait for the page load and hydration window on each repetition.
+  3. Observe that some runs render content while others remain on the centered loading spinner with empty body text.
+- Expected: The public homepage should reliably render usable content in Firefox desktop on every run, as it does in Chromium, WebKit, and mobile Chromium.
+- Actual: On 2026-09-17 retesting, Firefox desktop passed in a full-suite run and in one of a two-run repetition, but failed on the other repetition with HTTP `200` and no rendered body content within the timeout. The defect is intermittent, not consistently reproducible on every run.
 - Evidence: `test-results/compatibility-Key-public-p-2e403-ss-the-compatibility-matrix-firefox-desktop/test-failed-1.png`.
-- Recommendation: Investigate Firefox-specific hydration, JavaScript, or resource-loading behavior before claiming full cross-browser compatibility.
-- Status: Confirmed compatibility failure in the current test environment.
+- Recommendation: Investigate Firefox-specific hydration, JavaScript, or resource-loading race conditions; an intermittent failure suggests a timing/race issue rather than a hard incompatibility.
+- Status: Confirmed intermittent compatibility issue; not reproducible on every run.
 
 ### F-005: Contact-form reply exceeded the stated 24-hour response SLA
 
@@ -219,7 +219,7 @@ The public homepage smoke test passed on:
 - WebKit desktop
 - Chromium mobile profile
 
-Firefox desktop returned HTTP `200` but remained on the loading spinner with no rendered body content. The compatibility matrix therefore currently fails for Firefox desktop.
+Firefox desktop is intermittent: a 2026-09-17 re-test passed in a full-suite run and in one of a two-run repetition, but failed on another repetition with HTTP `200` and no rendered body content within the timeout. The compatibility matrix therefore currently shows an intermittent, not constant, failure for Firefox desktop (see F-004).
 
 This is compatibility smoke coverage, not exhaustive visual or workflow testing on every device/browser combination.
 

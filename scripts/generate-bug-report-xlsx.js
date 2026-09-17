@@ -24,7 +24,7 @@ const evidenceDetails = {
     'T02-F-001': 'Pricing extraction: monthlyPrice=12, annualPrice=144, statedSaving=20; calculatedSaving=0.',
     'T02-F-002': 'Pricing page text contains $12/month; FAQ pricing answer contains $15.',
     'T02-F-003': 'Contact POST returned 200; fields reported maxLength=-1; no reflected script text observed.',
-    'T02-F-004': 'Firefox navigation returned HTTP 200; page remained on loading spinner and body content was empty.',
+    'T02-F-004': 'Firefox navigation returned HTTP 200; intermittent on 2026-09-17 retest: 2 passes and 1 failure across 3 runs with empty body content on failure.',
     'T02-F-005': 'POST /api/communications/send returned 200; reply from info@thaura.ai quoted the exact submitted Name/Email/Subject/Message, confirming delivery.',
     'T02-F-006': 'Lighthouse document request for /api returned 401 ERRORED_DOCUMENT_REQUEST.',
     'T02-F-007': 'Lighthouse captured FCP/LCP/CLS/TBT/Speed Index/root response time; INP/FID was unavailable.',
@@ -63,11 +63,11 @@ const findings = [
     },
     {
         'Bug ID': 'T02-F-004', 'Task': 'Task 02', 'Severity': 'Medium', 'Area': 'Firefox compatibility', 'URL': 'https://thaura.ai/',
-        'Steps': 'Run the compatibility project for Firefox desktop and wait for page hydration.',
-        'Expected': 'Homepage renders usable content in Firefox.',
-        'Actual': 'Firefox returned 200 but remained on the loading spinner with no rendered body content.',
-        'Evidence': 'tests/task02/compatibility.spec.ts; reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed compatibility failure',
-        'Recommendation': 'Investigate Firefox-specific hydration, JavaScript, or resource-loading behavior.'
+        'Steps': 'Run the compatibility project for Firefox desktop, repeated across multiple runs, and wait for page hydration.',
+        'Expected': 'Homepage reliably renders usable content in Firefox on every run.',
+        'Actual': 'Intermittent: 2026-09-17 retest showed 2 passes and 1 failure across 3 runs; on failure, Firefox returned 200 but remained on the loading spinner with no rendered body content.',
+        'Evidence': 'tests/task02/compatibility.spec.ts; reports/task02/TASK-02-BUG-REPORT.md', 'Status': 'Confirmed intermittent compatibility issue',
+        'Recommendation': 'Investigate Firefox-specific hydration/timing race condition; not a hard incompatibility since it does not fail every run.'
     },
     {
         'Bug ID': 'T02-F-005', 'Task': 'Task 02', 'Severity': 'Informational', 'Area': 'Contact delivery', 'URL': 'https://backend.thaura.ai/api/communications/send',
