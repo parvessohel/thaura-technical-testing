@@ -6,14 +6,14 @@ const fixtureDirectory = path.resolve('tests/task01/fixtures');
 const KNOWN_PDF_MARKER = 'TASK01 PDF MARKER';
 
 test('Attached PDF content is parsed and read back accurately, not just accepted', async ({ browser }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(150_000);
   const context = await browser.newContext({ storageState: authStatePath });
   const page = await context.newPage();
 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(3_000);
 
   const uploadInput = page.locator('input[type="file"]').first();
+  await uploadInput.waitFor({ state: 'attached', timeout: 60_000 });
   await uploadInput.setInputFiles(path.join(fixtureDirectory, 'known.pdf'));
   await page.waitForTimeout(1_000);
 

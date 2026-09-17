@@ -76,7 +76,7 @@ The login flow uses a dedicated Gmail account and Thaura email OTP. Configure Gm
 node scripts/generate-gmail-token.js "C:\path\to\Thaura Gmail OTP Desktop.json"
 ```
 
-The exact test email addresses and login method are recorded in the Task 01 report. Dedicated fresh accounts (`+task01upload`, `+task01bypass`) are used for the upload-parsing-accuracy and quota-bypass tests so their quota state does not interfere with the other suites.
+The exact test email addresses and login method are recorded in the Task 01 report. Dedicated fresh accounts (`+task01upload`, `+task01bypass`, `+task01window`, `+task01quotaerr`) are used for the state-sensitive tests so their quota history does not interfere with the other suites.
 
 Refresh the authenticated Playwright state when needed:
 
@@ -104,6 +104,8 @@ npx playwright test tests/task01/auth-session.spec.ts
 npx playwright test tests/task01/chat-behavior.spec.ts
 npx playwright test tests/task01/free-tier-quota.spec.ts
 npx playwright test tests/task01/quota-bypass.spec.ts
+npx playwright test tests/task01/quota-window-behavior.spec.ts
+npx playwright test tests/task01/quota-failed-response.spec.ts
 npx playwright test tests/task01/upload-integrity.spec.ts
 npx playwright test tests/task01/upload-parsing-accuracy.spec.ts
 npx playwright test tests/task01/memory-incognito.spec.ts
