@@ -33,7 +33,9 @@ const evidenceDetails = {
     'T01-F-002': 'Upload UI rendered PDF/CSV/SVG attachment chips; parsing request was not completed due to state-dependent limit.',
     'T01-F-003': 'Memory panel opened; empty state observed; Incognito control visible and activatable.',
     'T01-F-004': 'POST /v1/chat/completions with accepted API key returned 402 Insufficient balance; invalid model returned 400.',
-    'T01-F-005': 'Authenticated UI probe exposed account menu but no editable Settings/Account/Billing form controls.'
+    'T01-F-005': 'Authenticated UI probe exposed account menu but no editable Settings/Account/Billing form controls.',
+    'T01-F-006': 'Second-tab and refreshed-session attempts were both quota-blocked; a direct replayed API call returned 429 rate_limit_exceeded with a resetAt timestamp.',
+    'T01-F-007': 'known.pdf (containing marker text "TASK01 PDF MARKER") was attached and the assistant replied with the exact marker text, confirming accurate content extraction.'
 };
 
 const findings = [
@@ -140,6 +142,22 @@ const findings = [
         'Actual': 'No editable Settings/Account/Billing surface was exposed in the current UI probe.',
         'Evidence': 'tests/task01/negative-boundary.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Deferred: surface not exposed',
         'Recommendation': 'Locate the product routes or enable the relevant surface, then add field-level boundary tests.'
+    },
+    {
+        'Bug ID': 'T01-F-006', 'Task': 'Task 01', 'Severity': 'Informational', 'Area': 'Free-tier quota bypass resistance', 'URL': 'https://thaura.ai/',
+        'Steps': 'On a fresh quota-exhausted account, attempt a second browser tab, a page refresh, and a direct replayed API call to POST /v1/chat/completions.',
+        'Expected': 'The account-wide quota block cannot be bypassed by any of the three vectors.',
+        'Actual': 'All three vectors remained blocked: second tab blocked, refreshed session still blocked, and the direct API replay returned 429 rate_limit_exceeded.',
+        'Evidence': 'tests/task01/quota-bypass.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Confirmed: quota cannot be bypassed via tested vectors',
+        'Recommendation': 'No action required; continue to enforce the limit server-side rather than relying on client state.'
+    },
+    {
+        'Bug ID': 'T01-F-007', 'Task': 'Task 01', 'Severity': 'Informational', 'Area': 'Upload parsing accuracy', 'URL': 'https://thaura.ai/',
+        'Steps': 'Attach known.pdf (containing the text "TASK01 PDF MARKER") and ask the assistant to reply with the exact marker text found inside it.',
+        'Expected': 'The assistant accurately extracts and reads back the document content, not just acknowledges the attachment.',
+        'Actual': 'The assistant replied with the exact marker text "TASK01 PDF MARKER", confirming accurate PDF content extraction.',
+        'Evidence': 'tests/task01/upload-parsing-accuracy.spec.ts; reports/task01/TASK-01-REPORT.md', 'Status': 'Confirmed: parsing accuracy verified for PDF text extraction',
+        'Recommendation': 'Extend the same marker-based approach to spreadsheet and image fixtures for broader parsing-accuracy coverage.'
     }
 ];
 

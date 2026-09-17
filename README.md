@@ -76,7 +76,7 @@ The login flow uses a dedicated Gmail account and Thaura email OTP. Configure Gm
 node scripts/generate-gmail-token.js "C:\path\to\Thaura Gmail OTP Desktop.json"
 ```
 
-The exact test email addresses and login method are recorded in the Task 01 report.
+The exact test email addresses and login method are recorded in the Task 01 report. Dedicated fresh accounts (`+task01upload`, `+task01bypass`) are used for the upload-parsing-accuracy and quota-bypass tests so their quota state does not interfere with the other suites.
 
 Refresh the authenticated Playwright state when needed:
 
@@ -84,7 +84,12 @@ Refresh the authenticated Playwright state when needed:
 npm run auth:login
 ```
 
-This creates the local ignored file `playwright/.auth/user.json`.
+This creates the local ignored file `playwright/.auth/user.json`. To create the additional dedicated states, run:
+
+```powershell
+node scripts/login-as.js "you+task01upload@gmail.com" "playwright/.auth/task01-upload.json"
+node scripts/login-as.js "you+task01bypass@gmail.com" "playwright/.auth/task01-bypass.json"
+```
 
 ### Run the full Task 01 suite
 
@@ -98,7 +103,9 @@ npx playwright test tests/task01
 npx playwright test tests/task01/auth-session.spec.ts
 npx playwright test tests/task01/chat-behavior.spec.ts
 npx playwright test tests/task01/free-tier-quota.spec.ts
+npx playwright test tests/task01/quota-bypass.spec.ts
 npx playwright test tests/task01/upload-integrity.spec.ts
+npx playwright test tests/task01/upload-parsing-accuracy.spec.ts
 npx playwright test tests/task01/memory-incognito.spec.ts
 npx playwright test tests/task01/developer-api-contract.spec.ts
 npx playwright test tests/task01/developer-api-authenticated.spec.ts
