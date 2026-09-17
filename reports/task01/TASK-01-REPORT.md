@@ -6,12 +6,13 @@ Target: `https://thaura.ai/`
 
 This report covers the automated Task 01 work completed on the dedicated Free-tier test account. Secrets, session tokens, OAuth credentials, and API keys are intentionally excluded.
 
-Final automated validation: `17 of 18 passed` with `npx playwright test tests/task01`. The one intermittent failure is in `chat-behavior.spec.ts` (it expects a new `/api/chats` creation request, but on accounts with existing chat history the composer sometimes continues the last-opened chat instead of starting a new one); this is a test-detection brittleness, not a product defect, and is unrelated to the quota, upload-parsing, or bypass coverage added below.
+Final automated validation: `18 passed` with `npx playwright test tests/task01`.
 
 Test account details for reproducibility:
 
 - Primary test account email: `shoheltqtec@gmail.com`
 - Quota-isolation test email: `shoheltqtec+task01quota@gmail.com`
+- Chat-behavior test email: `shoheltqtec+task01chat@gmail.com`
 - Upload-parsing test email: `shoheltqtec+task01upload@gmail.com`
 - Quota-bypass test email: `shoheltqtec+task01bypass@gmail.com`
 - Plan: Free Plan

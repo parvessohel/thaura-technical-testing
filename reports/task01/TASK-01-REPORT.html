@@ -30,16 +30,17 @@ blockquote { margin: 20px 0; padding: 12px 18px; border-left: 4px solid #e0a126;
 <body>
 <main>
 <article>
-<p class="meta">Generated 2026-09-17T12:00:00.274Z from <code>TASK-01-REPORT.md</code></p>
+<p class="meta">Generated 2026-09-17T13:24:23.485Z from <code>TASK-01-REPORT.md</code></p>
 <h1>Task 01: Thaura Web App Technical Testing Report</h1>
 <h2>Scope</h2>
 <p>Target: <code>https://thaura.ai/</code></p>
 <p>This report covers the automated Task 01 work completed on the dedicated Free-tier test account. Secrets, session tokens, OAuth credentials, and API keys are intentionally excluded.</p>
-<p>Final automated validation: <code>17 of 18 passed</code> with <code>npx playwright test tests/task01</code>. The one intermittent failure is in <code>chat-behavior.spec.ts</code> (it expects a new <code>/api/chats</code> creation request, but on accounts with existing chat history the composer sometimes continues the last-opened chat instead of starting a new one); this is a test-detection brittleness, not a product defect, and is unrelated to the quota, upload-parsing, or bypass coverage added below.</p>
+<p>Final automated validation: <code>18 passed</code> with <code>npx playwright test tests/task01</code>.</p>
 <p>Test account details for reproducibility:</p>
 <ul>
 <li>Primary test account email: <code>shoheltqtec@gmail.com</code></li>
 <li>Quota-isolation test email: <code>shoheltqtec+task01quota@gmail.com</code></li>
+<li>Chat-behavior test email: <code>shoheltqtec+task01chat@gmail.com</code></li>
 <li>Upload-parsing test email: <code>shoheltqtec+task01upload@gmail.com</code></li>
 <li>Quota-bypass test email: <code>shoheltqtec+task01bypass@gmail.com</code></li>
 <li>Plan: Free Plan</li>
